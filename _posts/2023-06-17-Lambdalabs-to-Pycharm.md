@@ -13,6 +13,7 @@ For the ones new to the topic, GPU cloud services permit you to run your scripts
 - open the ssh via terminal and setup the environment
 - link pycharm
 
+
 <!--more-->
 
 ## Instantiate a GPU cloud machine
