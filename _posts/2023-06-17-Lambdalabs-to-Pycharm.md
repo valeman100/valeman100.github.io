@@ -20,7 +20,7 @@ For the ones new to the topic, GPU cloud services permit you to run your scripts
 Let's begin by running a machine. This can be easily done after you created your account and linked the payment method (don't worry they will only charge for what you consume). Now that you are logged in you should see something similar to the picture below.
 
 <div class="img-div-any-width" markdown="0">
-  <img src="/images/lambda/lambdalab_init.png" />
+  <img src="/images/lambda/lambda_init.png" />
 </div>
 
 The next step is to add your public ssh key. It is as simple as clicking on the __ssh keys__ on the left and adding it. If you don't know where to find it on your local machine it is usually under the path you see below. Try this script in your terminal:
@@ -33,7 +33,7 @@ cat id_rsa.pub
 Now you are ready to instantiate your machine. Click on __launch instance__ and select the one you prefer. Wait until the boot is finished (should take a couple of minutes) then copy the __ssh login__ field.
 
 <div class="img-div-any-width" markdown="0">
-  <img src="/images/lambda/lambdalab_instantiated.png" />
+  <img src="/images/lambda/lambda_instantiated.png" />
 </div>
 
 ## Connect via terminal
@@ -64,7 +64,7 @@ Compile the panel as shown in the pic below. Remember to put the __IP__ of the m
 then just click next till the virtual env setup, which must be compiled as follow:
 
 <div class="img-div-any-width" markdown="0">
-  <img src="/images/lambda/pycharm_env.png" />
+  <img src="/images/lambda/pychar_env.png" />
 </div>
 
 This will automatically upload your whole project on the ssh machine. If you have heavy files like model checkpoints I recommend stopping it and excluding them from the automatic upload. It is faster to upload them via sftp or from huggingface_hub or directly from aws if you have saved them there.
