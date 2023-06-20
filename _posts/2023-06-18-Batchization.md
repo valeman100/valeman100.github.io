@@ -20,7 +20,7 @@ For clarity, we will divide the process into two steps
 
 The initial idea is to group the samples by the number of tokens.
 In particular, here, the __length_clusterization__ function takes in input a dataset which should be iterable of lists, where each list contains a tokenized text.
-The function creates a dictionary where the key is the number of tokens in each group and the value is a list containing all the samples with that length.
+The function creates a dictionary where the key is the number of tokens in each group and the value is a list containing all the samples of that length.
 
 ```python
 def length_clusterization(dataset):
@@ -43,7 +43,7 @@ def length_clusterization(dataset):
 
 ## Create a pseudo dataloader
 
-Here we create a dataset that is a dataloader because we check if the number of elements in each of the dictionary cluster keys is a multiple of the batch_size
+Here we create a dataset that is a dataloader because we check if the number of elements in each of the dictionary cluster keys is a multiple of the __batch_size__
 we concatenate the values into the final list while if the reminder is not zero before concatenating we crop the surplus elements.
 
 ```python
