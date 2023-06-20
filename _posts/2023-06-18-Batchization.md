@@ -4,9 +4,9 @@ published: True
 title: Batches with texts of different lengths
 ---
 
-When I was experimenting with [nanoGPT]() repo by Andrei Karpathy I saw that as in many other machine learning training, it's common to concatenate the sample of the dataset separating them with an <\end-of-sequence> token. This makes sense to me at the moment when your model has to learn the human language structure but not during the fine-tuning process. This is because we could concatenate texts with completely different and uncorrelated contexts inducing the model to evaluate the generation of the next token based on, possibly, two different topics.
+When I was experimenting with [nanoGPT](https://github.com/karpathy/nanoGPT) by Andrej Karpathy I saw that as in many other machine learning training, it's common to concatenate the sample of the dataset separating them with an <end-of-sequence> token. This makes sense to me at the moment when your model has to learn the human language structure but not during the fine-tuning process. This is because we could concatenate texts with completely different and uncorrelated contexts inducing the model to evaluate the generation of the next token based on, possibly, two different topics.
 
-To solve this I tried to create a simple back pipeline called batchization process which groups the texts by the number of tokens plus some tricks.
+To solve this I tried to create a simple batch pipeline called batchization process which groups the texts by the number of tokens plus some tricks.
 Let's check this out!
 
 ##### High-level guideline:
