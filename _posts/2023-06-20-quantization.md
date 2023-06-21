@@ -1,6 +1,6 @@
 ---
 layout: post
-published: True
+published: False
 title: How to connect Lambdalabs to Pycharm via SSH
 ---
 
