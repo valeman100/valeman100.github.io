@@ -5,7 +5,7 @@ title: How to quantize your finetuned llama model
 ---
 
 <div class="img-div-any-width" markdown="0">
-  <img src="/images/quantum_llama.png" />
+  <img src="/images/quantized_llama.png" />
 </div>
 
 Imagine you have just trained your brand new large language model using a supercluster with 8xA100 80GB on multiple nodes but now find butterflies flying away from your pocket and you can infer your creation only on a low-budget CPU machine or simply you are looking for a cheap way to put in production your buddy.
