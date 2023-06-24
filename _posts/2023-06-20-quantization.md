@@ -41,8 +41,7 @@ If we trained the model utilizing the huggingface packages or pytorch it's time 
 
 ## Compile, Convert, Quantize
 
-To achieve our goal in the simplest way possible we will use a Python script inspired by this
-[issue](https://huggingface.co/junelee/wizard-vicuna-13b/discussions/2). Let's analyze the code:
+We will use a Python script inspired by this [issue](https://huggingface.co/junelee/wizard-vicuna-13b/discussions/2) to achieve our goal in the simplest way possible. Let's analyze the code:
 
 ```python
 #!/usr/bin/env python3
