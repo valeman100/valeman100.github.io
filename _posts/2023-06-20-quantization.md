@@ -10,6 +10,7 @@ title: How to quantize your finetuned llama model
 
 Imagine you have just trained your brand new large language model using a supercluster with 8xA100 80GB on multiple nodes but now find butterflies flying away from your pocket and you can infer your creation only on a low-budget CPU machine or simply you are looking for a cheap way to put in production your buddy.
 In this guide, we will see how to shrink as much as we can the memory usage of our model and be able to run it with as small resources as 8GB of RAM. 
+
 To reach the top we will exploit two tricks:
 - int precision quantization
 - C++ code conversion
@@ -36,7 +37,7 @@ Clone llama.cpp using:
 git clone https://github.com/ggerganov/llama.cpp.git
 ```
 
-If we trained our model utilizing the huggingface packages or pytorch it's time to convert the model weights in a format called ggml and then from that checkpoint will be possible to generate the quantized transformer.
+If we trained the model utilizing the huggingface packages or pytorch it's time to convert the model weights in a format called ggml and then from that checkpoint will be possible to generate the quantized transformer.
 
 ## Compile, Convert, Quantize
 
@@ -93,12 +94,12 @@ if __name__ == "__main__":
 ```
 
 Let's go through the script:
-- initially, we set the path to the llama.cpp repo and check that the model location we will pass later is a directory containing all the required staff. In particular, remember to put inside the model folder the weights the config.json, and the tokenizer checkpoint.
-- creates the output dir where to put the quantized models.
-- a bash script to build the llama.cpp repo and to run the convert.py script which transforms our pytorch checkpoint into a ggml_v3 model.
+- initially, we set the path to the llama.cpp repo and check that the model location we will pass later is a directory containing all the required staff. In particular, remember to put inside the model's folder the weights the config.json, and the tokenizer checkpoint.
+- creates the output dir where to put the final result.
+- a bash script will build the llama.cpp repo and run the convert.py script which transforms our pytorch checkpoint into a ggml_v3 model.
 - finally, the quantize script creates four quantized models: "q4_0", "q4_1", "q5_0", "q5_1", "q8_0"
 
-For those curious about the meaning of the 4 quantized versions [here](https://www.reddit.com/r/LocalLLaMA/comments/139yt87/notable_differences_between_q4_2_and_q5_1/) you can find an insight.
+For those curious about the meaning of the 4 quantized versions, [here](https://www.reddit.com/r/LocalLLaMA/comments/139yt87/notable_differences_between_q4_2_and_q5_1/) you can find an insight.
 
 ## Inference time
 Let's wrap up the ideas. We executed convert.py to transform our fine-tuned llama model into another format compatible with the C++ implementation provided by llama.cpp.
@@ -113,8 +114,8 @@ There are a couple of ways to do so:
     this script generates a completion for the prompt (-p inline command) that asks to generate a 10-step list about how to build a website, furthermore, we set the max length for the completion at 512 (-n).
     There are several other options we can set which you can view from your bash terminal directly.
 
-2) The second option, which is more useful in my opinion, is to use bindings.
-In llama.cpp repo there are already different binders for Python, Go, Node.js, Ruby, C#/.NET. with them, you can instantiate a server or use a prebuilt docker image, build your own, or even use the quantized model in a Python script directly.
+2) The second option, which is more useful in my opinion, is to adopt bindings.
+In llama.cpp repo there are already binders for Python, Go, Node.js, Ruby, C#/.NET. with them, you can instantiate a server or use a prebuilt docker image, build your own, or even use the quantized model in a Python script directly.
 
 I hope you have found this guide helpful.
 
