@@ -110,8 +110,8 @@ There are a couple of ways to do so:
    
   _./main -m ./your-quantized-model-path/ggml-model-q4_0.bin -p "Building a website can be done in 10 simple steps:" -n 512_
 
-    this script generates a completion for the prompt (-p inline command) that asks to generate a 10-step list about how to build a website, furthermore, we set the max length for the completion at 512 (-n).
-    There are several other options we can set which you can view from your bash terminal directly.
+this script generates a completion for the prompt (-p inline command) that asks to generate a 10-step list about how to build a website, furthermore, we set the max length for the completion at 512 (-n).
+There are several other options we can select that you can view from your bash terminal directly.
 
 3) The second option, which is more useful in my opinion, is to adopt bindings.
 In llama.cpp repo there are already binders for Python, Go, Node.js, Ruby, C#/.NET. with them, you can instantiate a server or use a prebuilt docker image, build your own, or even use the quantized model in a Python script directly.
