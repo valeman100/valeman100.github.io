@@ -1,24 +1,29 @@
 ---
 layout: post
 published: True
-title: How to quantize your finetuned model 
+title: How to quantize your finetuned llama model
 ---
 
-Imagine you have just trained your brand new large language model using a supercluster with 8xA100 80GB on multiple nodes but now find butterflies flying away from your pocket and you can infer your creation only on a Mac or a CPU machine.
+<div class="img-div-any-width" markdown="0">
+  <img src="/images/quantum_llama.png" />
+</div>
+
+Imagine you have just trained your brand new large language model using a supercluster with 8xA100 80GB on multiple nodes but now find butterflies flying away from your pocket and you can infer your creation only on a low-budget CPU machine or simply you are looking for a cheap way to put in production your buddy.
 In this guide, we will see how to shrink as much as we can the memory usage of our model and be able to run it with as small resources as 8GB of RAM. 
-We will exploit two tricks:
+To reach the top we will exploit two tricks:
 - int precision quantization
 - C++ code conversion
 
 All of this will be possible thanks to the amazing work of [__llama.cpp__](https://github.com/ggerganov/llama.cpp) !!!
 
-This guide has been tested with a custom finetuned version of llama 7B which uses the Vicuna training pipeline but in general, should work with any llama model.
+###### Disclaimer
+This guide has been tested with a finetuned version of llama 7B from the [huggingface hub](https://huggingface.co/huggyllama/llama-7b) which uses the Vicuna training pipeline but in general, should work with any llama model that is saved in a pytorch fashion.
 
 ##### High-level summary:
 
-- clone lama.cpp repo on a machine equipped with GPU
-- Compile the repo and Quantize your model
-- Enjoy inference from a terminal, web server, python, or docker on your CPU device
+- Clone lama.cpp repo on a machine equipped with GPU.
+- Compile the repo and Quantize your model.
+- Enjoy inference from a terminal, web server, python, or docker on almost any device.
 
 <!--more-->
 
@@ -88,40 +93,33 @@ if __name__ == "__main__":
 ```
 
 Let's go through the script:
-- initially, we set the path to the llama.cpp repo we just cloned and check that the model location we will pass later is a directory containing all the required staff. In particular, remember to put in the model folder the weights the config.json, and the tokenizer checkpoint.
-- create the output dir where to put the quantized models.
-- a bash script to build the llama.cpp repo and runs the convert.py script which transforms our checkpoint into a ggml_v3 model.
-- finally we creates four quantized models "q4_0", "q4_1", "q5_0", "q5_1", "q8_0"
+- initially, we set the path to the llama.cpp repo and check that the model location we will pass later is a directory containing all the required staff. In particular, remember to put inside the model folder the weights the config.json, and the tokenizer checkpoint.
+- creates the output dir where to put the quantized models.
+- a bash script to build the llama.cpp repo and to run the convert.py script which transforms our pytorch checkpoint into a ggml_v3 model.
+- finally, the quantize script creates four quantized models: "q4_0", "q4_1", "q5_0", "q5_1", "q8_0"
 
-For those curious about the meaning of the 4 quantized models (here)[https://www.reddit.com/r/LocalLLaMA/comments/139yt87/notable_differences_between_q4_2_and_q5_1/] you can find an insight.
+For those curious about the meaning of the 4 quantized versions [here](https://www.reddit.com/r/LocalLLaMA/comments/139yt87/notable_differences_between_q4_2_and_q5_1/) you can find an insight.
 
-## Inference on our CPU 
-Let's wrap up the ideas we used the convert script to transform our fine-tuned llama model into another format compatible with the C++ implementation provided by llama.cpp.
-Now we are ready to transport the generated checkpoint in whichever platform we prefer and enjoy the generation on CPU, GPU, or MPS.
+## Inference time
+Let's wrap up the ideas. We executed convert.py to transform our fine-tuned llama model into another format compatible with the C++ implementation provided by llama.cpp.
+Now we are ready to transfer the generated checkpoint in whichever platform we prefer and enjoy the generation on CPU, GPU, or MPS.
 
-There are couple of ways to do so:
+There are a couple of ways to do so:
 
-1) first one is to run directly from the bash
-```bash
-./main -m ./your-quantized-model-path/ggml-model-q4_0.bin -p "Building a website can be done in 10 simple steps:" -n 512
-```
-this script generates a completion for the prompt (-p inline command) that asks to generate a 10-step list about how to build a website furthermore we set the max length for the completion at 512 (-n).
-There are several other options we can set which you can view from your bash terminal directly.
+1) first one is to run directly from the bash:
+    ```bash
+    ./main -m ./your-quantized-model-path/ggml-model-q4_0.bin -p "Building a website can be done in 10 simple steps:" -n 512
+    ```
+    this script generates a completion for the prompt (-p inline command) that asks to generate a 10-step list about how to build a website, furthermore, we set the max length for the completion at 512 (-n).
+    There are several other options we can set which you can view from your bash terminal directly.
 
-2) The second option which is more useful in my opinion, is to use a binging.
-In llama.cpp repo there are already different binders for Python, Go, Node.js, Ruby, C#/.NET. with them, you can instantiate a server or use a prebuilt docker image, build your one, or even use the quantized model in a Python script directly.
-
-
+2) The second option, which is more useful in my opinion, is to use bindings.
+In llama.cpp repo there are already different binders for Python, Go, Node.js, Ruby, C#/.NET. with them, you can instantiate a server or use a prebuilt docker image, build your own, or even use the quantized model in a Python script directly.
 
 I hope you have found this guide helpful.
 
 Please hit me up on <a href="https://twitter.com/Valeman100">Twitter</a> for any corrections or feedback.
 
-<div class="img-div-any-width" markdown="0">
-  <img src="/images/lambda/lambda_init.png" />
-</div>
+## More Resources
 
-## Resources
-
-* To understand quantization [high level](https://huggingface.co/docs/optimum/concept_guides/quantization) or [original article]().
-*
+* To understand quantization [high level](https://huggingface.co/docs/optimum/concept_guides/quantization).
