@@ -1,23 +1,23 @@
 ---
 layout: prediction_post
 published: True
-title: The Illustrated Transformer
+title: Il transformer illustrato - IT
 ---
-<span class="discussion">Discussions:
-<a href="https://news.ycombinator.com/item?id=18351674" class="hn-link">Hacker News (65 points, 4 comments)</a>, <a href="https://www.reddit.com/r/MachineLearning/comments/8uh2yz/p_the_illustrated_transformer_a_visual_look_at/" class="">Reddit r/MachineLearning (29 points, 3 comments)</a>
-</span>
-<br />
-<span class="discussion">Translations: <a href="https://www.mundhor.site/post/post14">Arabic</a>, <a href="https://blog.csdn.net/yujianmin1990/article/details/85221271">Chinese (Simplified) 1</a>, <a href="https://blog.csdn.net/qq_36667170/article/details/124359818">Chinese (Simplified) 2</a>, <a href="https://a-coles.github.io/2020/11/15/transformer-illustre.html">French 1</a>, <a href="https://lbourdois.github.io/blog/nlp/Transformer/">French 2</a>, <a href="https://tips-memo.com/translation-jayalmmar-transformer">Japanese</a>, <a href="https://nlpinkorean.github.io/illustrated-transformer/">Korean</a>, <a href="http://dml.qom.ac.ir/2022/05/17/illustrated-transformer/">Persian</a>, <a href="https://habr.com/ru/post/486358/">Russian</a>, <a href="https://www.ibidemgroup.com/edu/transformer-ilustrado-jay-alammar/">Spanish 1</a>, <a href="https://hackernoon.com/el-transformador-ilustrado-una-traduccion-al-espanol-0y73wwp">Spanish 2</a>, <a href="https://trituenhantao.io/tin-tuc/minh-hoa-transformer/">Vietnamese</a></span>
-<br />
-<span class="discussion">Watch: MIT's <a href="https://youtu.be/53YvP6gdD7U?t=432">Deep Learning State of the Art</a> lecture referencing this post</span>
 
+##### Disclaimer
+Traduzione italiana di [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+Non sono un traduttore professionista. 
+La proprietà intellettuale dell'articolo è di [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 
+Italian translation of [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+I'm not a professional translator. 
+The intellectual property of the article is owned by [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 
-In the [previous post, we looked at Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- a ubiquitous method in modern deep learning models. Attention is a concept that helped improve the performance of neural machine translation applications. In this post, we will look at **The Transformer** -- a model that uses attention to boost the speed with which these models can be trained. The Transformer outperforms the Google Neural Machine Translation model in specific tasks. The biggest benefit, however, comes from how The Transformer lends itself to parallelization. It is in fact Google Cloud's recommendation to use The Transformer as a reference model to use their [Cloud TPU](https://cloud.google.com/tpu/) offering. So let's try to break the model apart and look at how it functions.
+Nel [post precedente, abbiamo esaminato l'Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- un metodo onnipresente nei moderni modelli di deep learning. L'attention è un concetto che ha contribuito a migliorare le prestazioni delle applicazioni di traduzione automatica con modelli neurali. In questo post, esamineremo **The Transformer**, un modello che utilizza l'attenzione per aumentare la velocità con cui questi modelli possono essere addestrati. Il Trasformer supera il modello di traduzione automatica neurale di Google in attività specifiche. Il più grande vantaggio, tuttavia, deriva dal modo in cui il Transformer si presta alla parallelizzazione. È infatti raccomandazione di Google Cloud utilizzare il Transformer come modello di riferimento per utilizzare la loro proposte di [Cloud TPU](https://cloud.google.com/tpu/). Quindi proviamo a scomporre il modello e vediamo come funziona.
 
-The Transformer was proposed in the paper [Attention is All You Need](https://arxiv.org/abs/1706.03762). A TensorFlow implementation of it is available as a part of the [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor) package. Harvard's NLP group created a [guide annotating the paper with PyTorch implementation](http://nlp.seas.harvard.edu/2018/04/03/attention.html). In this post, we will attempt to oversimplify things a bit and introduce the concepts one by one to hopefully make it easier to understand to people without in-depth knowledge of the subject matter.
+Il Transformer è stato proposto nell'articolo [Attention is All You Need](https://arxiv.org/abs/1706.03762). Una sua implementazione TensorFlow è disponibile come parte del pacchetto [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor). Il gruppo NLP di Harvard ha creato una [guida che spiega l'articolo con l'implementazione di PyTorch](http://nlp.seas.harvard.edu/2018/04/03/attention.html). In questo post, cercheremo di semplificare un po' le cose e di introdurre i concetti uno per uno, sperando che sia più facile da capire per le persone senza una conoscenza approfondita dell'argomento.
 
-**2020 Update**: I've created a "Narrated Transformer" video which is a gentler approach to the topic:
+**Aggiornamento 2020**: Ho creato il video "Transformer narrati" che è un approccio meno impegnativo all'argomento:
 
  <div style="text-align:center">
 <iframe width="560" height="315" src="https://www.youtube.com/embed/-QH8fRhqFHM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"  style="
@@ -25,8 +25,8 @@ The Transformer was proposed in the paper [Attention is All You Need](https://ar
  max-width: 560px;"
 allowfullscreen></iframe>
 </div>
-## A High-Level Look
-Let's begin by looking at the model as a single black box. In a machine translation application, it would take a sentence in one language, and output its translation in another.
+## Uno sguardo generale
+Iniziamo osservando il modello come una singola scatola nera. In un'applicazione di traduzione automatica, prenderebbe una frase in una lingua e restituirebbe la sua traduzione in un'altra.
 
 
 <div class="img-div-any-width" markdown="0">
@@ -37,31 +37,30 @@ Let's begin by looking at the model as a single black box. In a machine translat
 <!--more-->
 
 
-Popping open that Optimus Prime goodness, we see an encoding component, a decoding component, and connections between them.
+Aprendo quella meraviglia di Optimus Prime, vediamo un componente di codifica, un componente di decodifica e le connessioni tra di essi.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/The_transformer_encoders_decoders.png" />
 </div>
 
-The encoding component is a stack of encoders (the paper stacks six of them on top of each other -- there's nothing magical about the number six, one can definitely experiment with other arrangements). The decoding component is a stack of decoders of the same number.
-
+Il componente di codifica è uno stack di encoders (il paper ne concatena sei uno dietro l'altro - non c'è nulla di magico nel numero sei, si possono sicuramente fare esperimenti con altre configurazioni). Il componente di decodifica è una concatenazione di decoders dello stesso numero.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/The_transformer_encoder_decoder_stack.png" />
 </div>
 
-The encoders are all identical in structure (yet they do not share weights). Each one is broken down into two sub-layers:
+Gli encoders sono tutti identici nella struttura (ma non condividono i pesi). Ognuno è suddiviso in due sottolivelli:
 
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/Transformer_encoder.png" />
 </div>
 
-The encoder's inputs first flow through a self-attention layer -- a layer that helps the encoder look at other words in the input sentence as it encodes a specific word. We'll look closer at self-attention later in the post.
+Gli input dell'encoder passano prima attraverso uno strato di self-attention, uno strato che aiuta il codificatore a guardare altre parole nella frase di input mentre codifica una parola specifica. Analizzeremo più da vicino la self-attention in seguito nel post.
 
-The outputs of the self-attention layer are fed to a feed-forward neural network. The exact same feed-forward network is independently applied to each position.
+Le uscite dello strato di self-attention vengono inviate a una rete neurale feed-forward. La stessa rete feed-forward viene applicata indipendentemente a ogni posizione.
 
-The decoder has both those layers, but between them is an attention layer that helps the decoder focus on relevant parts of the input sentence (similar what attention does in [seq2seq models](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)).
+Il decoder ha entrambi quei livelli, ma tra di essi c'è uno strato di attention che aiuta il decoder a focalizzarsi sulle parti rilevanti della frase di input (simile a ciò che fa l'attention nei [modelli seq2seq](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)).
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/Transformer_decoder.png" />
