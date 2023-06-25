@@ -67,23 +67,23 @@ Il decoder ha entrambi quei livelli, ma tra di essi c'è uno strato di attention
 </div>
 
 
-## Bringing The Tensors Into The Picture
+## Introduzione dei tensori al meccanismo
 
-Now that we've seen the major components of the model, let's start to look at the various vectors/tensors and how they flow between these components to turn the input of a trained model into an output.
+Ora che abbiamo visto i principali componenti del modello, iniziamo a esaminare i vari vettori/tensori e come fluiscono tra questi componenti per trasformare l'input di un modello addestrato in un output.
 
-As is the case in NLP applications in general, we begin by turning each input word into a vector using an [embedding algorithm](https://medium.com/deeper-learning/glossary-of-deep-learning-word-embedding-f90c3cec34ca).
+Come avviene nelle applicazioni di NLP in generale, iniziamo trasformando ogni parola di input in un vettore utilizzando un [algoritmo di embedding](https://medium.com/deeper-learning/glossary-of-deep-learning-word-embedding-f90c3cec34ca).
 
 <br />
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/embeddings.png" />
   <br />
-  Each word is embedded into a vector of size 512. We'll represent those vectors with these simple boxes.
+  Ogni parola viene convertita in un vettore di dimensione 512. Rappresenteremo questi vettori con questi semplici riquadri.
 </div>
 
-The embedding only happens in the bottom-most encoder. The abstraction that is common to all the encoders is that they receive a list of vectors each of the size 512 -- In the bottom encoder that would be the word embeddings, but in other encoders, it would be the output of the encoder that's directly below. The size of this list is hyperparameter we can set -- basically it would be the length of the longest sentence in our training dataset.
+L'embedding avviene solo nell'encoder più in basso. L'astrazione comune a tutti gli endoders è che ricevono una lista di vettori, ognuno di dimensione 512-- Nell'encoder più in basso l'input sarebbe direttamente l'output dell'algoritmo di embedding, mentre negli altri encoders sarebbe l'output dell'encoder sottostante. La dimensione di questa lista è un iperparametro che possiamo impostare - fondamentalmente corrisponderà alla lunghezza della frase più lunga nel nostro set di dati di addestramento.
 
-After embedding the words in our input sequence, each of them flows through each of the two layers of the encoder.
+Dopo l'embedding delle parole della nostra sequenza di iniziale, ognuna di esse viene processata da ciascuno dei due strati dell'encoder.
 
 
 
@@ -93,9 +93,9 @@ After embedding the words in our input sequence, each of them flows through each
 
 </div>
 
-Here we begin to see one key property of the Transformer, which is that the word in each position flows through its own path in the encoder. There are dependencies between these paths in the self-attention layer. The feed-forward layer does not have those dependencies, however, and thus the various paths can be executed in parallel while flowing through the feed-forward layer.
+Qui iniziamo a vedere una caratteristica chiave del Transformer, ovvero che ogni parola fluisce lungo il proprio percorso nell'encoder. Ci sono dipendenze tra questi percorsi nello strato di self-attention. Lo strato feed-forward, tuttavia, non ha tali dipendenze, e quindi i vari percorsi possono essere eseguiti in parallelo mentre passano attraverso lo strato feed-forward.
 
-Next, we'll switch up the example to a shorter sentence and we'll look at what happens in each sub-layer of the encoder.
+Successivamente, cambieremo l'esempio con una frase più breve e osserveremo cosa accade in ciascun sottolivello del codificatore.
 
 ## Now We're Encoding!
 
