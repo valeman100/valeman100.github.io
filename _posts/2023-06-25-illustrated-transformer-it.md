@@ -97,50 +97,50 @@ Qui iniziamo a vedere una caratteristica chiave del Transformer, ovvero che ogni
 
 Successivamente, cambieremo l'esempio con una frase più breve e osserveremo cosa accade in ciascun sottolivello del codificatore.
 
-## Now We're Encoding!
+## Ora stiamo codificando!
 
-As we've mentioned already, an encoder receives a list of vectors as input. It processes this list by passing these vectors into a 'self-attention' layer, then into a feed-forward neural network, then sends out the output upwards to the next encoder.
+Come abbiamo già accennato, l'encoder riceve una lista di vettori in input. Elabora questa lista passandoli attraverso uno strato di 'self-attention', per poi processarli attraverso una rete neurale feed-forward la quale genera l'output per il codificatore successivo.
 
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/encoder_with_tensors_2.png" />
   <br />
-  The word at each position passes through a self-attention process. Then, they each pass through a feed-forward neural network -- the exact same network with each vector flowing through it separately.
+  Ogni parola passa attraverso un processo di self-attention. Per poi attraversare una rete neurale feed-forward - la stessa rete con ogni vettore che scorre attraverso di essa separatamente.
 </div>
 
-## Self-Attention at a High Level
-Don't be fooled by me throwing around the word "self-attention" like it's a concept everyone should be familiar with. I had personally never came across the concept until reading the Attention is All You Need paper. Let us distill how it works.
+## Self-Attention in generale
+Non lasciarti ingannare dal fatto che io utilizzi la parola "self-attention" come se fosse un concetto che tutti dovrebbero conoscere. Personalmente, non ero mai venuto a conoscenza di questo concetto prima di leggere l'articolo "Attention is All You Need". Vediamo come funziona.
 
-Say the following sentence is an input sentence we want to translate:
+Supponiamo che la seguente frase sia una frase di input che vogliamo tradurre:
 
 "```The animal didn't cross the street because it was too tired```"
 
-What does "it" in this sentence refer to? Is it referring to the street or to the animal? It's a simple question to a human, but not as simple to an algorithm.
+A cosa si riferisce "it" in questa frase? Si riferisce alla strada o all'animale? È una domanda semplice per un essere umano, ma non altrettanto semplice per un algoritmo.
 
-When the model is processing the word "it", self-attention allows it to associate "it" with "animal".
+Quando il modello elabora la parola "it", la self-attention gli consente di associare "it" a "animal".
 
-As the model processes each word (each position in the input sequence), self attention allows it to look at other positions in the input sequence for clues that can help lead to a better encoding for this word.
+Man mano che il modello elabora ogni parola (ogni posizione nella sequenza di input), il self-attention gli consente di guardare altre posizioni nella sequenza di input per trovare indizi che possano aiutare a ottenere una migliore codifica per questa parola.
 
-If you're familiar with RNNs, think of how maintaining a hidden state allows an RNN to incorporate its representation of previous words/vectors it has processed with the current one it's processing. Self-attention is the method the Transformer uses to bake the "understanding" of other relevant words into the one we're currently processing.
+Se hai familiarità con le reti neurali ricorrenti (RNN), pensa a come mantenere uno stato nascosto consente a un'RNN di incorporare la sua rappresentazione delle parole/vettori precedenti che ha elaborato con quella corrente che sta elaborando. Il self-attention è il metodo che il Transformer utilizza per "incorporare" la "comprensione" di altre parole pertinenti in quella che stà elaborando attualmente.
 
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self-attention_visualization.png" />
   <br />
-  As we are encoding the word "it" in encoder #5 (the top encoder in the stack), part of the attention mechanism was focusing on "The Animal", and baked a part of its representation into the encoding of "it".
+  Mentre stiamo codificando la parola "it" nel codificatore n. 5 (il codificatore superiore nello stack), parte del meccanismo di attenzione si stava concentrando su "The animal" e ha incorporato una parte della sua rappresentazione nella codifica di "it".
 </div>
 
 
-Be sure to check out the [Tensor2Tensor notebook](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb) where you can load a Transformer model, and examine it using this interactive visualization.
+Assicurati di dare un'occhiata al [notebook Tensor2Tensor](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb) in cui puoi caricare un modello Transformer e esaminarlo utilizzando questa visualizzazione interattiva.
 
 
 
-## Self-Attention in Detail
-Let's first look at how to calculate self-attention using vectors, then proceed to look at how it's actually implemented -- using matrices.
+## Self-Attention in Dettaglio
+Iniziamo guardando come calcolare la self-attention utilizzando vettori e successivamente vedremo come viene effettivamente implementata -- utilizzando le matrici.
 
-The **first step** in calculating self-attention is to create three vectors from each of the encoder's input vectors (in this case, the embedding of each word). So for each word, we create a Query vector, a Key vector, and a Value vector. These vectors are created by multiplying the embedding by three matrices that we trained during the training process.
+**Primo passo** nel calcolare la self-attention è creare tre vettori da ciascun vettore di input del codificatore (in questo caso, l'embedding di ogni parola). Quindi, per ogni parola, creiamo un vettore di Query, un vettore di Key e un vettore di Value. Questi vettori vengono creati moltiplicando l'embedding per tre matrici che abbiamo addestrato durante il processo di training.
 
-Notice that these new vectors are smaller in dimension than the embedding vector. Their dimensionality is 64, while the embedding and encoder input/output vectors have dimensionality of 512. They don't HAVE to be smaller, this is an architecture choice to make the computation of multiheaded attention (mostly) constant.
+Nota che questi nuovi vettori sono di dimensioni più piccole rispetto al vettore di embedding. La loro dimensionalità è di 64, mentre l'embedding e i vettori di input/output del codificatore hanno una dimensionalità di 512. Non è obbligatorio che siano più piccoli, è una scelta architetturale per rendere il calcolo della multiheaded attention (in gran parte) costante.
 
 
 <br />
@@ -148,20 +148,20 @@ Notice that these new vectors are smaller in dimension than the embedding vector
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self_attention_vectors.png" />
   <br />
-  Multiplying <span class="encoder">x1</span> by the <span class="decoder">WQ</span> weight matrix produces <span class="decoder">q1</span>, the "query" vector associated with that word. We end up creating a "query", a "key", and a "value" projection of each word in the input sentence.
+  Moltiplicando <span class="encoder">x1</span> per la matrice dei pesi del <span class="decoder">WQ</span> otteniamo <span class="decoder">q1</span>, il vettore "query" associato con quella parola. Alla fine creiamo una proiezione "query", "key" e "value" per ogni parola nella frase di input.
 </div>
 
 <br />
 <br />
 
-What are the "query", "key", and "value" vectors?
+Cosa sono i vettori "query", "key" e "value"?
 <br />
 <br />
-They're abstractions that are useful for calculating and thinking about attention. Once you proceed with reading how attention is calculated below, you'll know pretty much all you need to know about the role each of these vectors plays.
+Sono astrazioni che sono utili per calcolare e comprendere l'attenzione. Una volta che procedi nella lettura di come viene calcolata l'attenzione di seguito, saprai praticamente tutto ciò che devi sapere sul ruolo che ciascuno di questi vettori svolge.
 
-The **second step** in calculating self-attention is to calculate a score. Say we're calculating the self-attention for the first word in this example, "Thinking". We need to score each word of the input sentence against this word. The score determines how much focus to place on other parts of the input sentence as we encode a word at a certain position.
+**Secondo passo** nel calcolare la self-attention è calcolare uno score. Supponiamo di calcolare la self-attention per la prima parola in questo esempio, "Thinking". Dobbiamo valutare ogni parola della frase di input rispetto a questa parola. Lo score determina quanto focalizzare altre parti della frase di input mentre codifichiamo una parola in una determinata posizione.
 
-The score is calculated by taking the dot product of the <span class="decoder">query vector</span> with the <span class="context">key vector</span> of the respective word we're scoring. So if we're processing the self-attention for the word in position <span class="encoder">#1</span>, the first score would be the dot product of <span class="decoder">q1</span> and <span class="context">k1</span>. The second score would be the dot product of <span class="decoder">q1</span> and <span class="context">k2</span>.
+Lo score viene calcolato prendendo il prodotto scalare del <span class="decoder">vettore di query</span> con il <span class="context">vettore di key</span> della rispettiva parola che stiamo valutando. Quindi, se stiamo elaborando la self-attention per la parola in posizione <span class="encoder">#1</span>, il primo score sarebbe il prodotto scalare tra <span class="decoder">q1</span> e <span class="context">k1</span>. Il secondo score sarebbe il prodotto scalare tra <span class="decoder">q1</span> e <span class="context">k2</span>.
 
 
 <br />
@@ -175,7 +175,7 @@ The score is calculated by taking the dot product of the <span class="decoder">q
 <br />
 
 
-The **third and fourth steps** are to divide the scores by 8 (the square root of the dimension of the key vectors used in the paper -- 64. This leads to having more stable gradients. There could be other possible values here, but this is the default), then pass the result through a softmax operation. Softmax normalizes the scores so they're all positive and add up to 1.
+Il **terzo e quarto passaggio** consistono nel dividere i punteggi per 8 (la radice quadrata della dimensione dei vettori chiave utilizzati nell'articolo, ossia 64). Ciò porta a ottenere gradienti più stabili. Potrebbero esserci altri valori possibili qui, ma questo è il valore predefinito. Successivamente, il risultato viene sottoposto a un'operazione softmax. La softmax normalizza i punteggi in modo che siano tutti positivi e la loro somma sia uguale a 1.
 
 
 <br />
@@ -187,14 +187,14 @@ The **third and fourth steps** are to divide the scores by 8 (the square root of
 
 </div>
 
-This softmax score determines how much each word will be expressed at this position. Clearly the word at this position will have the highest softmax score, but sometimes it's useful to attend to another word that is relevant to the current word.
+Questo punteggio softmax determina quanto ogni parola sarà espressa in questa posizione. Chiaramente, la parola in questa posizione avrà il punteggio softmax più alto, ma talvolta è utile concentrarsi su un'altra parola rilevante per la parola corrente.
 
 <br />
 
 
-The **fifth step** is to multiply each value vector by the softmax score (in preparation to sum them up). The intuition here is to keep intact the values of the word(s) we want to focus on, and drown-out irrelevant words (by multiplying them by tiny numbers like 0.001, for example).
+Il **quinto passaggio** consiste nel moltiplicare ciascun vettore di value per il punteggio softmax (in preparazione per la loro somma). L'intuizione qui è mantenere integri i valori della/e parola/e su cui vogliamo concentrarci e "affogare" le parole irrilevanti (moltiplicandole per numeri piccoli come 0,001, ad esempio).
 
-The **sixth step** is to sum up the weighted value vectors. This produces the output of the self-attention layer at this position (for the first word).
+Il **sesto passaggio** serve a sommare i vettori di value precedentemente pesati. Questo produce l'output del layer di self-attention per questa posizione (ovvero per la prima parola).
 
 <br />
 
@@ -203,7 +203,7 @@ The **sixth step** is to sum up the weighted value vectors. This produces the ou
   <br />
 </div>
 
-That concludes the self-attention calculation. The resulting vector is one we can send along to the feed-forward neural network. In the actual implementation, however, this calculation is done in matrix form for faster processing. So let's look at that now that we've seen the intuition of the calculation on the word level.
+Questo conclude il calcolo dell'self-attention. Il vettore risultante è quello che possiamo inviare alla rete neurale a feed-forward. Nell'implementazione effettiva, tuttavia, questo calcolo viene effettuato in forma matriciale per una elaborazione più veloce. Quindi vediamo ora questo aspetto, ora che abbiamo compreso l'intuizione del calcolo a livello di singola parola.
 
 
 ## Matrix Calculation of Self-Attention
