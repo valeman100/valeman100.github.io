@@ -206,23 +206,23 @@ Il **sesto passaggio** serve a sommare i vettori di value precedentemente pesati
 Questo conclude il calcolo dell'self-attention. Il vettore risultante è quello che possiamo inviare alla rete neurale a feed-forward. Nell'implementazione effettiva, tuttavia, questo calcolo viene effettuato in forma matriciale per una elaborazione più veloce. Quindi vediamo ora questo aspetto, ora che abbiamo compreso l'intuizione del calcolo a livello di singola parola.
 
 
-## Matrix Calculation of Self-Attention
-**The first step** is to calculate the Query, Key, and Value matrices. We do that by packing our embeddings into a matrix <span class="encoder">X</span>, and multiplying it by the weight matrices we've trained (<span class="decoder">WQ</span>, <span class="context">WK</span>, <span class="step_no">WV</span>).
+## Calcolo Matriciale per la Self-Attention
+**Il primo passo** consiste nel calcolare le matrici di Query, Key e Value. Lo facciamo raggruppando le nostre rappresentazioni in una matrice <span class="encoder">X</span> e moltiplicandola per le matrici di pesi che abbiamo allenato (<span class="decoder">WQ</span>, <span class="context">WK</span>, <span class="step_no">WV</span>).
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/self-attention-matrix-calculation.png" />
   <br />
-  Every row in the <span class="encoder">X</span> matrix corresponds to a word in the input sentence. We again see the difference in size of the embedding vector (512, or 4 boxes in the figure), and the q/k/v vectors (64, or 3 boxes in the figure)
+    Ogni riga nella matrice <span class="encoder">X</span> corrisponde a una parola nella frase di input. Possiamo notare la differenza di dimensione tra il vettore di embedding (512, o 4 caselle nella figura) e i vettori q/k/v (64, o 3 caselle nella figura).
 </div>
 
 <br />
 
-**Finally**, since we're dealing with matrices, we can condense steps two through six in one formula to calculate the outputs of the self-attention layer.
+**Infine**, dato che stiamo lavorando con matrici, possiamo condensare i passaggi dal due al sei in una formula per calcolare gli output del layer di self-attention.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/self-attention-matrix-calculation-2.png" />
   <br />
-  The self-attention calculation in matrix form
+  Il calcolo della self-attention in forma matriciale.
 </div>
 
 <br />
@@ -230,23 +230,23 @@ Questo conclude il calcolo dell'self-attention. Il vettore risultante è quello 
 
 <br />
 
-## The Beast With Many Heads
+## La bestia con molte teste
 
-The paper further refined the self-attention layer by adding a mechanism called "multi-headed" attention. This improves the performance of the attention layer in two ways:
+Il paper ha ulteriormente migliorato il layer di auto-attenzione aggiungendo un meccanismo chiamato "multi-headed" attention. Questo migliora le prestazioni del layer di attenzione in due modi:
 
- 1. It expands the model's ability to focus on different positions. Yes, in the example above, z1 contains a little bit of every other encoding, but it could be dominated by the actual word itself. If we're translating a sentence like "The animal didn't cross the street because it was too tired", it would be useful to know which word "it" refers to.
+1. Espande la capacità del modello di concentrarsi su diverse posizioni. Sì, nell'esempio precedente, z1 contiene un po' di ogni altra codifica, ma potrebbe essere dominato dalla parola stessa. Se stiamo traducendo una frase come "The animal didn't cross the street because it was too tired", sarebbe utile sapere a quale parola si riferisce "it".
 
- 1. It gives the attention layer multiple "representation subspaces". As we'll see next, with multi-headed attention we have not only one, but multiple sets of Query/Key/Value weight matrices (the Transformer uses eight attention heads, so we end up with eight sets for each encoder/decoder). Each of these sets is randomly initialized. Then, after training, each set is used to project the input embeddings (or vectors from lower encoders/decoders) into a different representation subspace.
+2. Fornisce al layer di attenzione più "sottospazi di rappresentazione". Come vedremo in seguito, con la multi-headed attention non abbiamo solo un set di matrici di pesi Query/Key/Value (il Transformer utilizza otto attenzioni distinte, quindi otteniamo otto set per ogni encoder/decoder). Ogni set di matrici viene inizializzato casualmente. Successivamente, dopo l'addestramento, ogni set viene utilizzato per proiettare gli embedding di input (o vettori da encoder/decoder inferiori) in un diverso sottospazio di rappresentazione.
 
 
  <div class="img-div-any-width" markdown="0">
    <img src="/images/t/transformer_attention_heads_qkv.png" />
    <br />
-   With multi-headed attention, we maintain separate Q/K/V weight matrices for each head resulting in different Q/K/V matrices. As we did before, we multiply X by the WQ/WK/WV matrices to produce Q/K/V matrices.
+   Con la multi-headed attention, manteniamo separate matrici di pesi Q/K/V per ogni attenzione, ottenendo diverse matrici Q/K/V. Come abbiamo fatto prima, moltiplichiamo X per le matrici WQ/WK/WV per ottenere le matrici Q/K/V.
  </div>
 
  <br />
-If we do the same self-attention calculation we outlined above, just eight different times with different weight matrices, we end up with eight different Z matrices
+Se eseguiamo il calcolo di auto-attenzione descritto sopra, ma otto volte diverse con diverse matrici di pesi, otteniamo otto diverse matrici Z.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_attention_heads_z.png" />
@@ -256,9 +256,9 @@ If we do the same self-attention calculation we outlined above, just eight diffe
 
  <br />
 
-This leaves us with a bit of a challenge. The feed-forward layer is not expecting eight matrices -- it's expecting a single matrix (a vector for each word). So we need a way to condense these eight down into a single matrix.
+Questo ci pone di fronte a una sfida. Il livello di feed-forward non si aspetta otto matrici, ma si aspetta una singola matrice (un vettore per ogni parola). Quindi abbiamo bisogno di un modo per condensare queste otto matrici in una singola matrice.
 
-How do we do that? We concat the matrices then multiply them by an additional weights matrix WO.
+Come facciamo? Concateniamo le matrici, quindi le moltiplichiamo per una matrice di pesi aggiuntiva WO.
 
 
 <div class="img-div-any-width" markdown="0">
@@ -267,7 +267,7 @@ How do we do that? We concat the matrices then multiply them by an additional we
 
 </div>
 
-That's pretty much all there is to multi-headed self-attention. It's quite a handful of matrices, I realize. Let me try to put them all in one visual so we can look at them in one place
+Praticamente è tutto quello che c'è da sapere sulla multi-headed self-attention. Mi rendo conto che ci sono parecchie matrici. Cercherò di metterle tutte in un'unica immagine in modo da poterle vedere tutte insieme.
 
 <br />
 
@@ -279,18 +279,17 @@ That's pretty much all there is to multi-headed self-attention. It's quite a han
 
 <br />
 
-Now that we have touched upon attention heads, let's revisit our example from before to see where the different attention heads are focusing as we encode the word "it" in our example sentence:
+Ora che abbiamo parlato delle attention heads, torniamo all'esempio precedente per vedere su cosa si stanno concentrando le diverse attenzioni mentre codifichiamo la parola "it" nella nostra frase di esempio:
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self-attention_visualization_2.png" />
   <br />
-  As we encode the word "it", one attention head is focusing most on "the animal", while another is focusing on "tired" -- in a sense, the model's representation of the word "it" bakes in some of the representation of both "animal" and "tired".
+  Mentre codifichiamo la parola "it", una delle attenzioni si concentra principalmente su "the animal", mentre un'altra si concentra su "tired" -- in un certo senso, la rappresentazione della parola "it" nel modello include un po' della rappresentazione sia di "animal" che di "tired".
 </div>
 
 <br />
 
-If we add all the attention heads to the picture, however, things can be harder to interpret:
-
+Tuttavia, se aggiungiamo tutte le attenzioni all'immagine, può essere più difficile interpretarle:
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self-attention_visualization_3.png" />
   <br />
