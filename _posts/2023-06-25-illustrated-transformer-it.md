@@ -437,27 +437,27 @@ Una volta definito il nostro vocabolario di output, possiamo utilizzare un vetto
 
 Dopo questo riepilogo, discutiamo la funzione di perdita del modello -- la metrica che stiamo ottimizzando durante la fase di addestramento per portare a un modello addestrato e, si spera, sorprendentemente accurato.
 
-## The Loss Function
-Say we are training our model. Say it's our first step in the training phase, and we're training it on a simple example -- translating "merci" into "thanks".
+## Loss Function
+Supponiamo di essere nella fase di addestramento del nostro modello. Supponiamo che sia il nostro primo passo nella fase di addestramento e che lo stiamo addestrando su un semplice esempio -- tradurre "merci" in "thanks".
 
-What this means, is that we want the output to be a probability distribution indicating the word "thanks". But since this model is not yet trained, that's unlikely to happen just yet.
+Ciò significa che vogliamo che l'output sia una distribuzione di probabilità che indichi la parola "grazie". Ma poiché questo modello non è ancora addestrato, ciò è improbabile che accada fin da subito.
 
 <div class="img-div" markdown="0">
   <img src="/images/t/transformer_logits_output_and_label.png" />
   <br />
-  Since the model's parameters (weights) are all initialized randomly, the (untrained) model produces a probability distribution with arbitrary values for each cell/word. We can compare it with the actual output, then tweak all the model's weights using backpropagation to make the output closer to the desired output.
+  Poiché i parametri (pesi) del modello sono inizializzati casualmente, il modello (non addestrato) produce una distribuzione di probabilità con valori arbitrari per ogni cella/parola. Possiamo confrontarla con l'output effettivo, quindi regolare tutti i pesi del modello utilizzando la retropropagazione per avvicinare l'output all'output desiderato.
 </div>
 
 <br />
 
-How do you compare two probability distributions? We simply subtract one from the other. For more details, look at  [cross-entropy](https://colah.github.io/posts/2015-09-Visual-Information/) and [Kullback–Leibler divergence](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained).
+Come confronti due distribuzioni di probabilità? Semplicemente sottraendo una dall'altra. Per ulteriori dettagli, guarda [cross-entropy](https://colah.github.io/posts/2015-09-Visual-Information/) e [Kullback–Leibler divergence](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained).
 
-But note that this is an oversimplified example. More realistically, we'll use a sentence longer than one word. For example -- input: "je suis étudiant" and expected output: "i am a student". What this really means, is that we want our model to successively output probability distributions where:
+Ma nota che questo è un esempio semplificato. In modo più realistico, useremo una frase più lunga di una parola. Ad esempio -- input: "je suis étudiant" e output previsto: "i am a student". Ciò significa che vogliamo che il nostro modello produca successivamente distribuzioni di probabilità in cui:
 
- * Each probability distribution is represented by a vector of width vocab_size (6 in our toy example, but more realistically a number like 30,000 or 50,000)
- * The first probability distribution has the highest probability at the cell associated with the word "i"
- * The second probability distribution has the highest probability at the cell associated with the word "am"
- * And so on, until the fifth output distribution indicates '```<end of sentence>```' symbol, which also has a cell associated with it from the 10,000 element vocabulary.
+ * Ogni distribuzione di probabilità è rappresentata da un vettore di larghezza vocab_size (6 nel nostro esempio di esempio, ma più realisticamente un numero come 30.000 o 50.000)
+ * La prima distribuzione di probabilità ha la probabilità più alta nella cella associata alla parola "i"
+ * La seconda distribuzione di probabilità ha la probabilità più alta nella cella associata alla parola "am"
+ * E così via, fino a quando la quinta distribuzione di output indica il simbolo '```<end of sentence>```' che ha anch'esso una cella associata dall'elemento di vocabolario di 10.000 elementi.
 
 
  <div class="img-div" markdown="0">
