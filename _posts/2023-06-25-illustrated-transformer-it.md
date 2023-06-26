@@ -368,19 +368,19 @@ Questo vale anche per i sottolivelli del decoder. Se pensassimo a un Transformer
 </div>
 
 
-## The Decoder Side
-Now that we've covered most of the concepts on the encoder side, we basically know how the components of decoders work as well. But let's take a look at how they work together.
+## La parte del Decoder
+Ora che abbiamo coperto la maggior parte dei concetti relativi al lato encoder, conosciamo fondamentalmente il funzionamento dei componenti del decoder. Ma diamo un'occhiata a come lavorano insieme.
 
-The encoder start by processing the input sequence. The output of the top encoder is then transformed into a set of attention vectors K and V. These are to be used by each decoder in its "encoder-decoder attention" layer which helps the decoder focus on appropriate places in the input sequence:
+L'encoder inizia elaborando la sequenza di input. L'output dell'encoder superiore viene quindi trasformato in un insieme di vettori di attention K e V. Questi vettori verranno utilizzati da ciascun decoder nel suo strato di "encoder-decoder attention", che aiuta il decoder a concentrarsi sui punti appropriati nella sequenza di input:
 
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_decoding_1.gif" />
   <br />
-  After finishing the encoding phase, we begin the decoding phase. Each step in the decoding phase outputs an element from the output sequence (the English translation sentence in this case).
+  Dopo aver completato la fase di codifica, iniziamo la fase di decodifica. Ogni passaggio nella fase di decodifica produce un elemento dalla sequenza di output (la frase tradotta in inglese in questo caso).
 </div>
 
-The following steps repeat the process until a special <end of sentence> symbol is reached indicating the transformer decoder has completed its output. The output of each step is fed to the bottom decoder in the next time step, and the decoders bubble up their decoding results just like the encoders did. And just like we did with the encoder inputs, we embed and add positional encoding to those decoder inputs to indicate the position of each word.
+I passaggi successivi ripetono il processo fino a quando non viene raggiunto un simbolo speciale di fine frase (<end of sentence>) che indica che il decoder del transformer ha completato la sua generazione di output. L'output di ogni passaggio viene alimentato al decoder inferiore nel passaggio successivo, e i decoder trasmettono i loro risultati di decodifica proprio come hanno fatto gli encoder. E proprio come abbiamo fatto con gli input dell'encoder, incorporiamo e aggiungiamo una codifica di posizione a questi input del decoder per indicare la posizione di ciascuna parola.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_decoding_2.gif" />
@@ -388,54 +388,54 @@ The following steps repeat the process until a special <end of sentence> symbol 
 
 </div>
 
-The self attention layers in the decoder operate in a slightly different way than the one in the encoder:
+Gli strati di self-attention nel decoder operano in modo leggermente diverso rispetto a quelli nell'encoder:
 
-In the decoder, the self-attention layer is only allowed to attend to earlier positions in the output sequence. This is done by masking future positions (setting them to ```-inf```) before the softmax step in the self-attention calculation.
+Nel decoder, lo strato di self-attention può considerare solo le posizioni precedenti nella sequenza di output. Ciò viene fatto mascherando le posizioni future (impostandole a ```-inf```) prima del passaggio softmax nel calcolo della self-attention.
 
-The "Encoder-Decoder Attention" layer works just like multiheaded self-attention, except it creates its Queries matrix from the layer below it, and takes the Keys and Values matrix from the output of the encoder stack.
+Lo strato di "Encoder-Decoder Attention" funziona proprio come la multiheaded self-attention, ad eccezione che crea la matrice delle Queries dallo strato sottostante e prende le matrici delle Keys e delle Values dall'output dello stack dell'encoder.
 
-## The Final Linear and Softmax Layer
+## Lineare finale e il layer di Softmax.
 
-The decoder stack outputs a vector of floats. How do we turn that into a word? That's the job of the final Linear layer which is followed by a Softmax Layer.
+La pila del decoder produce un vettore di numeri decimali. Come lo convertiamo in una parola? Questo è il compito del livello lineare finale, seguito da un livello Softmax.
 
-The Linear layer is a simple fully connected neural network that projects the vector produced by the stack of decoders, into a much, much larger vector called a logits vector.
+Il livello lineare è un semplice neurone completamente connesso che proietta il vettore prodotto dalla pila dei decoder in un vettore molto, molto più ampio chiamato vettore dei logit.
 
-Let's assume that our model knows 10,000 unique English words (our model's "output vocabulary") that it's learned from its training dataset. This would make the logits vector 10,000 cells wide -- each cell corresponding to the score of a unique word. That is how we interpret the output of the model followed by the Linear layer.
+Supponiamo che il nostro modello conosca 10.000 parole inglesi uniche (il "vocabolario di output" del nostro modello) apprese dal set di dati di addestramento. Questo renderebbe il vettore dei logit largo 10.000 celle, ognuna corrispondente al punteggio di una parola unica. Così interpretiamo l'output del modello seguito dal livello lineare.
 
-The softmax layer then turns those scores into probabilities (all positive, all add up to 1.0). The cell with the highest probability is chosen, and the word associated with it is produced as the output for this time step.
+Il livello Softmax trasforma quindi questi punteggi in probabilità (tutte positive, che sommano a 1,0). Viene selezionata la cella con la probabilità più alta e la parola associata ad essa viene prodotta come output per questo passo temporale.
 
   <br />
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_decoder_output_softmax.png" />
   <br />
-  This figure starts from the bottom with the vector produced as the output of the decoder stack. It is then turned into an output word.
+  Questa figura parte dal basso con il vettore prodotto come output della pila dei decoder. Viene quindi convertito in una parola di output.
 </div>
 
   <br />
 
-## Recap Of Training
-Now that we've covered the entire forward-pass process through a trained Transformer, it would be useful to glance at the intuition of training the model.
+## Riepilogo del Training
+Ora che abbiamo coperto l'intero processo di passaggio in avanti attraverso un Transformer addestrato, sarebbe utile dare un'occhiata all'intuizione dell'addestramento del modello.
 
-During training, an untrained model would go through the exact same forward pass. But since we are training it on a labeled training dataset, we can compare its output with the actual correct output.
+Durante l'addestramento, un modello non addestrato passerebbe attraverso lo stesso passaggio in avanti. Ma poiché lo stiamo addestrando su un set di dati di addestramento etichettato, possiamo confrontare il suo output con l'output corretto effettivo.
 
- To visualize this, let's assume our output vocabulary only contains six words("a", "am", "i", "thanks", "student", and "\<eos\>" (short for 'end of sentence')).
+Per visualizzare questo, supponiamo che il nostro vocabolario di output contenga solo sei parole ("a", "am", "i", "thanks", "student", and "\<eos\>" (abbreviato per 'end of sentence')).
 
  <div class="img-div" markdown="0">
    <img src="/images/t/vocabulary.png" />
    <br />
-   The output vocabulary of our model is created in the preprocessing phase before we even begin training.
+   Il vocabolario di output del nostro modello viene creato nella fase di preelaborazione prima di iniziare l'addestramento.
  </div>
 
-Once we define our output vocabulary, we can use a vector of the same width to indicate each word in our vocabulary. This also known as one-hot encoding. So for example, we can indicate the word "am" using the following vector:
+Una volta definito il nostro vocabolario di output, possiamo utilizzare un vettore della stessa larghezza per indicare ogni parola nel nostro vocabolario. Questo è anche noto come codifica one-hot. Ad esempio, possiamo indicare la parola "am" utilizzando il seguente vettore:
 
 <div class="img-div" markdown="0">
   <img src="/images/t/one-hot-vocabulary-example.png" />
   <br />
-  Example: one-hot encoding of our output vocabulary
+  Esempio: codifica one-hot del nostro vocabolario di output
 </div>
 
-Following this recap, let's discuss the model's loss function -- the metric we are optimizing during the training phase to lead up to a trained and hopefully amazingly accurate model.
+Dopo questo riepilogo, discutiamo la funzione di perdita del modello -- la metrica che stiamo ottimizzando durante la fase di addestramento per portare a un modello addestrato e, si spera, sorprendentemente accurato.
 
 ## The Loss Function
 Say we are training our model. Say it's our first step in the training phase, and we're training it on a simple example -- translating "merci" into "thanks".
