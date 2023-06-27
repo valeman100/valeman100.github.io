@@ -505,6 +505,6 @@ Lavori correlati:
 ## Riconoscimenti
 Grazie a <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a href="http://jakob.uszkoreit.net/">Jakob Uszkoreit</a>, <a href="https://www.linkedin.com/in/llion-jones-9ab3064b">Llion Jones </a>, <a href="https://ai.google/research/people/LukaszKaiser">Lukasz Kaiser</a>, <a href="https://twitter.com/nikiparmar09">Niki Parmar</a>, and <a href="https://dblp.org/pers/hd/s/Shazeer:Noam">Noam Shazeer</a> per aver fornito feedback sulle versioni precedenti di questo post.
 
-Per favore contattami su <a href="https://twitter.com/JayAlammar">Twitter</a> per qualsiasi correzione o feedback sull'articolo originario.
+Per favore contatta Jay Alammar su <a href="https://twitter.com/JayAlammar">Twitter</a> per qualsiasi correzione o feedback sull'articolo originario.
 
-Altrimenti per correzione o feedback su questa traduzione contattatemi su <a href="https://twitter.com/Valeman100">Twitter</a>.
+Altrimenti per correzione o feedback su questa traduzione contattate Valerio Mannucci su <a href="https://twitter.com/Valeman100">Twitter</a>.
