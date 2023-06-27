@@ -463,34 +463,34 @@ Ma nota che questo è un esempio semplificato. In modo più realistico, useremo 
  <div class="img-div" markdown="0">
    <img src="/images/t/output_target_probability_distributions.png" />
    <br />
-   The targeted probability distributions we'll train our model against in the training example for one sample sentence.
+   Le distribuzioni di probabilità di destinazione su cui addestreremo il nostro modello nell'esempio di addestramento per una frase campione.
  </div>
 
 <br />
 
-After training the model for enough time on a large enough dataset, we would hope the produced probability distributions would look like this:
+Dopo aver addestrato il modello per un tempo sufficiente su un dataset abbastanza ampio, ci aspetteremmo che le distribuzioni di probabilità prodotte assomiglino a queste:
 
   <div class="img-div" markdown="0">
     <img src="/images/t/output_trained_model_probability_distributions.png" />
     <br />
-    Hopefully upon training, the model would output the right translation we expect. Of course it's no real indication if this phrase was part of the training dataset (see: <a href="https://www.youtube.com/watch?v=TIgfjmp-4BA">cross validation</a>). Notice that every position gets a little bit of probability even if it's unlikely to be the output of that time step -- that's a very useful property of softmax which helps the training process.
+    Speriamo che, dopo l'addestramento, il modello produca la traduzione corretta che ci aspettiamo. Naturalmente, questo non è un vero indicatore se questa frase faceva parte del dataset di addestramento (vedi: <a href="https://www.youtube.com/watch?v=TIgfjmp-4BA">validazione incrociata</a>). Notate che ogni posizione ottiene un po' di probabilità anche se è improbabile che sia l'output di quel passo temporale: questa è una proprietà molto utile della softmax che aiuta il processo di addestramento.
 </div>
 
 
-Now, because the model produces the outputs one at a time, we can assume that the model is selecting the word with the highest probability from that probability distribution and throwing away the rest. That's one way to do it (called greedy decoding). Another way to do it would be to hold on to, say, the top two words (say, 'I' and 'a' for example), then in the next step, run the model twice: once assuming the first output position was the word 'I', and another time assuming the first output position was the word 'a', and whichever version produced less error considering both positions #1 and #2 is kept. We repeat this for positions #2 and #3...etc. This method is called "beam search", where in our example, beam_size was two (meaning that at all times, two partial hypotheses (unfinished translations) are kept in memory), and top_beams is also two (meaning we'll return two translations). These are both hyperparameters that you can experiment with.
+Ora, poiché il modello produce le uscite una alla volta, possiamo assumere che il modello selezioni la parola con la probabilità più alta da quella distribuzione di probabilità e scarti il resto. Questo è un modo per farlo (chiamato decodifica greedy). Un altro modo per farlo sarebbe quello di mantenere, ad esempio, le prime due parole (ad esempio, 'I' e 'a'), quindi nel passaggio successivo, eseguire il modello due volte: una volta assumendo che la prima posizione di output fosse la parola 'Io' e un'altra volta assumendo che la prima posizione di output fosse la parola 'un', e la versione che produce meno errore considerando entrambe le posizioni #1 e #2 viene conservata. Ripetiamo questo per le posizioni #2 e #3...ecc. Questo metodo si chiama "beam search", dove nel nostro esempio, beam_size era due (il che significa che in ogni momento, due ipotesi parziali (traduzioni incomplete) vengono conservate in memoria), e top_beams è anche due (il che significa che restituiremo due traduzioni). Questi sono entrambi iperparametri con cui puoi sperimentare.
 
 
 
-## Go Forth And Transform
+## Avanti e trasforma
 
-I hope you've found this a useful place to start to break the ice with the major concepts of the Transformer. If you want to go deeper, I'd suggest these next steps:
+Spero che tu abbia trovato questo un punto di partenza utile per rompere il ghiaccio con i concetti principali del Transformer. Se vuoi approfondire, ti suggerisco i seguenti passaggi successivi:
 
-* Read the [Attention Is All You Need](https://arxiv.org/abs/1706.03762) paper, the Transformer blog post ([Transformer: A Novel Neural Network Architecture for Language Understanding](https://ai.googleblog.com/2017/08/transformer-novel-neural-network.html)), and the [Tensor2Tensor announcement](https://ai.googleblog.com/2017/06/accelerating-deep-learning-research.html).
-* Watch [Łukasz Kaiser's talk](https://www.youtube.com/watch?v=rBCqOTEfxvg) walking through the model and its details
-* Play with the [Jupyter Notebook provided as part of the Tensor2Tensor repo](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb)
-* Explore the [Tensor2Tensor repo](https://github.com/tensorflow/tensor2tensor).
+* Leggi l'articolo [Attention Is All You Need](https://arxiv.org/abs/1706.03762), il blogpost sul transformer ([Transformer: A Novel Neural Network Architecture for Language Understanding](https://ai.googleblog.com/2017/08/transformer-novel-neural-network.html)), e il [Tensor2Tensor announcement](https://ai.googleblog.com/2017/06/accelerating-deep-learning-research.html).
+* Guarda [Łukasz Kaiser's talk](https://www.youtube.com/watch?v=rBCqOTEfxvg) che illustra il modello e i suoi dettagli.
+* Sperimenta con [Jupyter Notebook provided as part of the Tensor2Tensor repo](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb)
+* Esplora [Tensor2Tensor repo](https://github.com/tensorflow/tensor2tensor).
 
-Follow-up works:
+Lavori correlati:
 
 * [Depthwise Separable Convolutions for Neural Machine Translation](https://arxiv.org/abs/1706.03059)
 * [One Model To Learn Them All](https://arxiv.org/abs/1706.05137)
@@ -502,7 +502,9 @@ Follow-up works:
 * [Fast Decoding in Sequence Models using Discrete Latent Variables](https://arxiv.org/abs/1803.03382)
 * [Adafactor: Adaptive Learning Rates with Sublinear Memory Cost](https://arxiv.org/abs/1804.04235)
 
-## Acknowledgements
-Thanks to <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a href="http://jakob.uszkoreit.net/">Jakob Uszkoreit</a>, <a href="https://www.linkedin.com/in/llion-jones-9ab3064b">Llion Jones </a>, <a href="https://ai.google/research/people/LukaszKaiser">Lukasz Kaiser</a>, <a href="https://twitter.com/nikiparmar09">Niki Parmar</a>, and <a href="https://dblp.org/pers/hd/s/Shazeer:Noam">Noam Shazeer</a> for providing feedback on earlier versions of this post.
+## Riconoscimenti
+Grazie a <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a href="http://jakob.uszkoreit.net/">Jakob Uszkoreit</a>, <a href="https://www.linkedin.com/in/llion-jones-9ab3064b">Llion Jones </a>, <a href="https://ai.google/research/people/LukaszKaiser">Lukasz Kaiser</a>, <a href="https://twitter.com/nikiparmar09">Niki Parmar</a>, and <a href="https://dblp.org/pers/hd/s/Shazeer:Noam">Noam Shazeer</a> per aver fornito feedback sulle versioni precedenti di questo post.
 
-Please hit me up on <a href="https://twitter.com/JayAlammar">Twitter</a> for any corrections or feedback.
+Per favore contattami su <a href="https://twitter.com/JayAlammar">Twitter</a> per qualsiasi correzione o feedback sull'articolo originario.
+
+Altrimenti per questa traduzione contattatemi su 
