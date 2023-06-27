@@ -507,4 +507,4 @@ Grazie a <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a hr
 
 Per favore contattami su <a href="https://twitter.com/JayAlammar">Twitter</a> per qualsiasi correzione o feedback sull'articolo originario.
 
-Altrimenti per questa traduzione contattatemi su 
+Altrimenti per correzione o feedback su questa traduzione contattatemi su <a href="https://twitter.com/Valeman100">Twitter</a>.
