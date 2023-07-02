@@ -168,7 +168,7 @@ Lo score viene calcolato facendo il prodotto scalare tra il <span class="decoder
 <br />
 
 
-Il **terzo e quarto passaggio** consistono nel dividere i punteggi per 8 (la radice quadrata della dimensione dei vettori chiave utilizzati nell'articolo, ossia 64). Ciò porta a ottenere gradienti più stabili. Potrebbero esserci altri valori possibili qui, ma questo è il valore predefinito. Successivamente, il risultato viene sottoposto a un'operazione softmax. La softmax normalizza i punteggi in modo che siano tutti positivi e la loro somma sia uguale a 1.
+Il **terzo e quarto passaggio** consistono nel dividere i punteggi per 8 (la radice quadrata della dimensione dei vettori key utilizzati nell'articolo, ossia 64). Questo per ottenere gradienti più stabili. Potremmo utilizzare altri valori ma questo è quello predefinito. Successivamente viene applicata la softmax al risultato, quest'ultima normalizza i punteggi in modo che siano tutti positivi e la loro somma sia uguale a 1.
 
 
 <br />
@@ -180,14 +180,13 @@ Il **terzo e quarto passaggio** consistono nel dividere i punteggi per 8 (la rad
 
 </div>
 
-Questo punteggio softmax determina quanto ogni parola sarà espressa in questa posizione. Chiaramente, la parola in questa posizione avrà il punteggio softmax più alto, ma talvolta è utile concentrarsi su un'altra parola rilevante per la parola corrente.
-
+Il punteggio della softmax determina quanto ogni parola sarà correlata a questa posizione. Chiaramente, la parola in questa posizione avrà il punteggio softmax più alto.
 <br />
 
 
-Il **quinto passaggio** consiste nel moltiplicare ciascun vettore di value per il punteggio softmax (in preparazione per la loro somma). L'intuizione qui è mantenere integri i valori della/e parola/e su cui vogliamo concentrarci e "affogare" le parole irrilevanti (moltiplicandole per numeri piccoli come 0,001, ad esempio).
+Il **quinto passaggio** consiste nel moltiplicare ciascun vettore di value per il risultato della softmax (per poi sommarli). L'intuizione qui è quella di mantenere più alti i valori della/e parola/e su cui vogliamo concentrarci mentre rendere molto bassi quelli per le parole irrilevanti (andandoli a moltiplicare per numeri piccoli).
 
-Il **sesto passaggio** serve a sommare i vettori di value precedentemente pesati. Questo produce l'output del layer di self-attention per questa posizione (ovvero per la prima parola).
+Il **sesto passaggio** serve a sommare i vettori di value precedentemente pesati con i valori della softmax. Questo produce l'output del layer di self-attention per questa posizione (ovvero per la prima parola).
 
 <br />
 
@@ -196,11 +195,11 @@ Il **sesto passaggio** serve a sommare i vettori di value precedentemente pesati
   <br />
 </div>
 
-Questo conclude il calcolo dell'self-attention. Il vettore risultante è quello che possiamo inviare alla rete neurale a feed-forward. Nell'implementazione effettiva, tuttavia, questo calcolo viene effettuato in forma matriciale per una elaborazione più veloce. Quindi vediamo ora questo aspetto, ora che abbiamo compreso l'intuizione del calcolo a livello di singola parola.
+Questo conclude il calcolo della self-attention. Il vettore risultante è quello che possiamo inviare al layer di feed-forward. Nell'implementazione effettiva, tuttavia, questo calcolo viene effettuato in forma matriciale per una elaborazione più veloce. Vediamo l'implementazione effettiva ora che abbiamo compreso l'intuizione del calcolo a livello di singola parola.
 
 
 ## Calcolo Matriciale per la Self-Attention
-**Il primo passo** consiste nel calcolare le matrici di Query, Key e Value. Lo facciamo raggruppando le nostre rappresentazioni in una matrice <span class="encoder">X</span> e moltiplicandola per le matrici di pesi che abbiamo allenato (<span class="decoder">WQ</span>, <span class="context">WK</span>, <span class="step_no">WV</span>).
+**Il primo passo** consiste nel calcolare le matrici di Query, Key e Value. Lo facciamo raggruppando le parole in una matrice <span class="encoder">X</span> e moltiplicandola separatamente per le matrici di pesi che abbiamo allenato (<span class="decoder">WQ</span>, <span class="context">WK</span>, <span class="step_no">WV</span>).
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/self-attention-matrix-calculation.png" />
@@ -215,7 +214,7 @@ Questo conclude il calcolo dell'self-attention. Il vettore risultante è quello 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/self-attention-matrix-calculation-2.png" />
   <br />
-  Il calcolo della self-attention in forma matriciale.
+  Calcolo della self-attention in forma matriciale.
 </div>
 
 <br />
@@ -225,21 +224,21 @@ Questo conclude il calcolo dell'self-attention. Il vettore risultante è quello 
 
 ## La bestia con molte teste
 
-Il paper ha ulteriormente migliorato il layer di auto-attenzione aggiungendo un meccanismo chiamato "multi-headed" attention. Questo migliora le prestazioni del layer di attenzione in due modi:
+Il paper ha ulteriormente migliorato il layer di self-attention aggiungendo un meccanismo chiamato "multi-headed" attention. Questo incrementa le prestazioni del layer in due modi:
 
-1. Espande la capacità del modello di concentrarsi su diverse posizioni. Sì, nell'esempio precedente, z1 contiene un po' di ogni altra codifica, ma potrebbe essere dominato dalla parola stessa. Se stiamo traducendo una frase come "The animal didn't cross the street because it was too tired", sarebbe utile sapere a quale parola si riferisce "it".
+1. Aumenta la capacità del modello di concentrarsi su diverse posizioni. Nell'esempio precedente, z1 contiene un po' di ogni altra codifica, ma potrebbe essere dominato dalla parola stessa. Se stiamo traducendo una frase come "The animal didn't cross the street because it was too tired", sarebbe utile sapere a quale parola si riferisce "it".
 
-2. Fornisce al layer di attenzione più "sottospazi di rappresentazione". Come vedremo in seguito, con la multi-headed attention non abbiamo solo un set di matrici di pesi Query/Key/Value (il Transformer utilizza otto attenzioni distinte, quindi otteniamo otto set per ogni encoder/decoder). Ogni set di matrici viene inizializzato casualmente. Successivamente, dopo l'addestramento, ogni set viene utilizzato per proiettare gli embedding di input (o vettori da encoder/decoder inferiori) in un diverso sottospazio di rappresentazione.
+2. Fornisce al layer di attention più "sottospazi di rappresentazione". Come vedremo in seguito, con la multi-headed attention non abbiamo solo un set di matrici di pesi Query/Key/Value (il Transformer utilizza otto attention distinte di modo da otteniamo otto set per ogni encoder/decoder). Ogni set di matrici viene inizializzato casualmente, per poi (dopo l'addestramento) essere utilizzato per proiettare gli embedding di input (o i vettori provenienti dagli encoder/decoder inferiori) in un diverso sottospazio di rappresentazione.
 
 
  <div class="img-div-any-width" markdown="0">
    <img src="/images/t/transformer_attention_heads_qkv.png" />
    <br />
-   Con la multi-headed attention, manteniamo separate matrici di pesi Q/K/V per ogni attenzione, ottenendo diverse matrici Q/K/V. Come abbiamo fatto prima, moltiplichiamo X per le matrici WQ/WK/WV per ottenere le matrici Q/K/V.
+   Con la multi-headed attention, manteniamo matrici di pesi Q/K/V separati per ogni attention, ottenendo di conseguenza matrici Q/K/V differenti per ogni testa. Come abbiamo fatto prima, moltiplichiamo X per le matrici WQ/WK/WV per ottenere le matrici Q/K/V.
  </div>
 
  <br />
-Se eseguiamo il calcolo di auto-attenzione descritto sopra, ma otto volte diverse con diverse matrici di pesi, otteniamo otto diverse matrici Z.
+Se eseguiamo il calcolo di self-attention descritto sopra, con otto diverse matrici di pesi, otteniamo otto diverse matrici Z.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_attention_heads_z.png" />
@@ -249,7 +248,7 @@ Se eseguiamo il calcolo di auto-attenzione descritto sopra, ma otto volte divers
 
  <br />
 
-Questo ci pone di fronte a una sfida. Il livello di feed-forward non si aspetta otto matrici, ma si aspetta una singola matrice (un vettore per ogni parola). Quindi abbiamo bisogno di un modo per condensare queste otto matrici in una singola matrice.
+Questo ci pone di fronte a un problema, il layer di feed-forward non si aspetta otto matrici, ma una sola (un vettore per ogni parola). Dobbiamo quindi condensare in una singola matrice.
 
 Come facciamo? Concateniamo le matrici, quindi le moltiplichiamo per una matrice di pesi aggiuntiva WO.
 
