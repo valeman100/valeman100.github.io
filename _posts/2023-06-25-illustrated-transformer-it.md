@@ -4,29 +4,6 @@ published: True
 title: Il transformer illustrato - IT
 ---
 
-Nel [post precedente, abbiamo esaminato l'Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- un metodo onnipresente nei moderni modelli di deep learning. L'attention è un concetto che ha contribuito a migliorare le prestazioni delle applicazioni di traduzione automatica con modelli neurali. In questo post, esamineremo **The Transformer**, un modello che utilizza l'attenzione per aumentare la velocità con cui questi modelli possono essere addestrati. Il Trasformer supera il modello di traduzione automatica neurale di Google in attività specifiche. Il più grande vantaggio, tuttavia, deriva dal modo in cui il Transformer si presta alla parallelizzazione. È infatti raccomandazione di Google Cloud utilizzare il Transformer come modello di riferimento per utilizzare la loro proposte di [Cloud TPU](https://cloud.google.com/tpu/). Quindi proviamo a scomporre il modello e vediamo come funziona.
-
-Il Transformer è stato proposto nell'articolo [Attention is All You Need](https://arxiv.org/abs/1706.03762). Una sua implementazione TensorFlow è disponibile come parte del pacchetto [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor). Il gruppo NLP di Harvard ha creato una [guida che spiega l'articolo con l'implementazione di PyTorch](http://nlp.seas.harvard.edu/2018/04/03/attention.html). In questo post, cercheremo di semplificare un po' le cose e di introdurre i concetti uno per uno, sperando che sia più facile da capire per le persone senza una conoscenza approfondita dell'argomento.
-
-**Aggiornamento 2020**: Ho creato il video "Transformer narrati" che è un approccio meno impegnativo all'argomento:
-
- <div style="text-align:center">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/-QH8fRhqFHM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"  style="
- width: 100%;
- max-width: 560px;"
-allowfullscreen></iframe>
-</div>
-## Uno sguardo generale
-Iniziamo osservando il modello come una singola scatola nera. In un'applicazione di traduzione automatica, prenderebbe una frase in una lingua e restituirebbe la sua traduzione in un'altra.
-
-
-<div class="img-div-any-width" markdown="0">
-  <img src="/images/t/the_transformer_3.png" />
-</div>
-
-
-<!--more-->
-
 ## Disclaimer
 Traduzione italiana di [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 Non sono un traduttore professionista. 
@@ -36,6 +13,28 @@ Italian translation of [The illustrated Transformer by Jay Alammar](http://jalam
 I'm not a professional translator. 
 The intellectual property of the article is owned by [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 
+Nel [post precedente, abbiamo esaminato l'Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- un metodo onnipresente nei moderni modelli di deep learning. L'attention è uno strumento che ha contribuito a migliorare le prestazioni delle applicazioni di traduzione automatica che utilizzano modelli neurali. In questo post, esamineremo **Il Transformer**, un modello che utilizza l'attention per aumentare la velocità con cui queste reti possono essere addestrati. Il Trasformer ha perfino supera il modello di traduzione automatica neurale di Google in attività specifiche. Il più grande vantaggio, tuttavia, deriva dal modo in cui il Transformer si presta alla parallelizzazione. È infatti raccomandazione di Google Cloud sfruttare il Transformer come modello di riferimento per utilizzare la loro proposte di [Cloud TPU](https://cloud.google.com/tpu/). Proviamo a scomporre il modello e vediamo come funziona.
+
+Il Transformer è stato proposto nell'articolo [Attention is All You Need](https://arxiv.org/abs/1706.03762). Una sua implementazione TensorFlow è disponibile come parte del pacchetto [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor). Il gruppo NLP di Harvard ha creato una [guida che spiega l'articolo con implementazioni in PyTorch](http://nlp.seas.harvard.edu/2018/04/03/attention.html). In questo post, cercheremo di semplificare un po' le cose e di introdurre i concetti uno per uno, sperando che sia più facile da capire per le persone senza una conoscenza approfondita dell'argomento.
+
+**Aggiornamento 2020**: Ho creato il video "Transformer narrati" che è un approccio più soft all'argomento:
+
+ <div style="text-align:center">
+<iframe width="560" height="315" src="https://www.youtube.com/embed/-QH8fRhqFHM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"  style="
+ width: 100%;
+ max-width: 560px;"
+allowfullscreen></iframe>
+</div>
+## Uno sguardo generale
+Iniziamo osservando il modello come fosse una scatola nera. In un'applicazione di traduzione automatica, prenderebbe una frase in una lingua e restituirebbe la sua traduzione in un'altra.
+
+
+<div class="img-div-any-width" markdown="0">
+  <img src="/images/t/the_transformer_3.png" />
+</div>
+
+
+<!--more-->
 
 Aprendo quella meraviglia di Optimus Prime, vediamo un componente di codifica, un componente di decodifica e le connessioni tra di essi.
 
@@ -43,7 +42,7 @@ Aprendo quella meraviglia di Optimus Prime, vediamo un componente di codifica, u
   <img src="/images/t/The_transformer_encoders_decoders.png" />
 </div>
 
-Il componente di codifica è uno stack di encoders (il paper ne concatena sei uno dietro l'altro - non c'è nulla di magico nel numero sei, si possono sicuramente fare esperimenti con altre configurazioni). Il componente di decodifica è una concatenazione di decoders dello stesso numero.
+Il componente di codifica è uno stack di encoders (il paper ne concatena sei uno dietro l'altro - non c'è nulla di magico nel numero sei, si possono sicuramente fare esperimenti con altre configurazioni). Il componente di decodifica è una concatenazione di altri sei decoders.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/The_transformer_encoder_decoder_stack.png" />
@@ -56,11 +55,11 @@ Gli encoders sono tutti identici nella struttura (ma non condividono i pesi). Og
   <img src="/images/t/Transformer_encoder.png" />
 </div>
 
-Gli input dell'encoder passano prima attraverso uno strato di self-attention, uno strato che aiuta il codificatore a guardare altre parole nella frase di input mentre codifica una parola specifica. Analizzeremo più da vicino la self-attention in seguito nel post.
+Gli input dell'encoder passano prima attraverso uno strato di self-attention, uno strato che permette all'encoder di analizzare altre parole nella frase di input mentre codifica una parola specifica. Analizzeremo più da vicino la self-attention in seguito nel post.
 
-Le uscite dello strato di self-attention vengono inviate a una rete neurale feed-forward. La stessa rete feed-forward viene applicata indipendentemente a ogni posizione.
+Le uscite dello strato di self-attention vengono inviate a una rete neurale feed-forward. La stessa rete feed-forward viene applicata indipendentemente a ogni parola.
 
-Il decoder ha entrambi quei livelli, ma tra di essi c'è uno strato di attention che aiuta il decoder a focalizzarsi sulle parti rilevanti della frase di input (simile a ciò che fa l'attention nei [modelli seq2seq](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)).
+Il decoder ha anche esso entrambi questi livelli, ma tra di essi c'è uno strato di attention che aiuta il decoder a focalizzarsi sulle parti rilevanti della frase di input (simile a ciò che fa l'attention nei [modelli seq2seq](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/)).
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/Transformer_decoder.png" />
@@ -69,23 +68,21 @@ Il decoder ha entrambi quei livelli, ma tra di essi c'è uno strato di attention
 
 ## Introduzione dei tensori al meccanismo
 
-Ora che abbiamo visto i principali componenti del modello, iniziamo a esaminare i vari vettori/tensori e come fluiscono tra questi componenti per trasformare l'input di un modello addestrato in un output.
+Ora che abbiamo visto i principali componenti del modello, iniziamo a esaminare i vari vettori/tensori e come vengono elaborati tra questi componenti per trasformare l'input in output.
 
-Come avviene nelle applicazioni di NLP in generale, iniziamo trasformando ogni parola di input in un vettore utilizzando un [algoritmo di embedding](https://medium.com/deeper-learning/glossary-of-deep-learning-word-embedding-f90c3cec34ca).
+Come generalmente avviene nelle applicazioni di NLP, iniziamo trasformando ogni parola di input in un vettore utilizzando un [algoritmo di embedding](https://medium.com/deeper-learning/glossary-of-deep-learning-word-embedding-f90c3cec34ca).
 
 <br />
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/embeddings.png" />
   <br />
-  Ogni parola viene convertita in un vettore di dimensione 512. Rappresenteremo questi vettori con questi semplici riquadri.
+  Ogni parola viene convertita in un vettore di dimensione 512. Rappresenteremo questi vettori con semplici riquadri.
 </div>
 
-L'embedding avviene solo nell'encoder più in basso. L'astrazione comune a tutti gli endoders è che ricevono una lista di vettori, ognuno di dimensione 512-- Nell'encoder più in basso l'input sarebbe direttamente l'output dell'algoritmo di embedding, mentre negli altri encoders sarebbe l'output dell'encoder sottostante. La dimensione di questa lista è un iperparametro che possiamo impostare - fondamentalmente corrisponderà alla lunghezza della frase più lunga nel nostro set di dati di addestramento.
+L'embedding della frase in input avviene solo prima di entrare nel primo encoder. La caratteristica comune a tutti gli endoders è che ricevono una lista di vettori, ognuno di dimensione 512 -- Nel primo encoder l'input sarebbe direttamente l'output dell'algoritmo di embedding, mentre negli altri encoders sarebbe l'output dell'encoder sottostante. La dimensione di questa lista è un iperparametro che possiamo impostare - idealmente corrisponderà alla lunghezza della frase più lunga nel nostro set di dati di addestramento.
 
-Dopo l'embedding delle parole della nostra sequenza di iniziale, ognuna di esse viene processata da ciascuno dei due strati dell'encoder.
-
-
+Dopo l'embedding delle parole della sequenza iniziale, ciascuna di esse viene processata dai due strati dell'encoder.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/encoder_with_tensors.png" />
@@ -93,19 +90,19 @@ Dopo l'embedding delle parole della nostra sequenza di iniziale, ognuna di esse 
 
 </div>
 
-Qui iniziamo a vedere una caratteristica chiave del Transformer, ovvero che ogni parola fluisce lungo il proprio percorso nell'encoder. Ci sono dipendenze tra questi percorsi nello strato di self-attention. Lo strato feed-forward, tuttavia, non ha tali dipendenze, e quindi i vari percorsi possono essere eseguiti in parallelo mentre passano attraverso lo strato feed-forward.
+Qui iniziamo a vedere una caratteristica chiave del Transformer, ovvero che l'encoder processa singolarmente ogni parola. Verrebbe da pensare che non ci siano correlazioni tra le parole ma non è cosi infatti le dipendenze tra i termini sono introdotte nella self-attention. Lo strato feed-forward, tuttavia, non ha tali dipendenze, e quindi i vari percorsi possono essere parallelizzati.
 
-Successivamente, cambieremo l'esempio con una frase più breve e osserveremo cosa accade in ciascun sottolivello del codificatore.
+Successivamente, cambieremo l'esempio con una frase più breve e osserveremo cosa accade in ciascun sottolivello del'encoder.
 
-## Ora stiamo codificando!
+## Stiamo codificando!
 
-Come abbiamo già accennato, l'encoder riceve una lista di vettori in input. Elabora questa lista passandoli attraverso uno strato di 'self-attention', per poi processarli attraverso una rete neurale feed-forward la quale genera l'output per il codificatore successivo.
+Come abbiamo già accennato, l'encoder riceve una lista di vettori in input che elabora attraverso uno strato di 'self-attention', per poi processarli utilizzando una rete neurale feed-forward la quale genera l'output per l'encoder successivo.
 
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/encoder_with_tensors_2.png" />
   <br />
-  Ogni parola passa attraverso un processo di self-attention. Per poi attraversare una rete neurale feed-forward - la stessa rete con ogni vettore che scorre attraverso di essa separatamente.
+  Ogni parola passa attraverso un processo di self-attention. Per poi attraversare una rete neurale feed-forward - la stessa rete in cui ogni vettore viene processato separatamente.
 </div>
 
 ## Self-Attention in generale
@@ -119,36 +116,32 @@ A cosa si riferisce "it" in questa frase? Si riferisce alla strada o all'animale
 
 Quando il modello elabora la parola "it", la self-attention gli consente di associare "it" a "animal".
 
-Man mano che il modello elabora ogni parola (ogni posizione nella sequenza di input), il self-attention gli consente di guardare altre posizioni nella sequenza di input per trovare indizi che possano aiutare a ottenere una migliore codifica per questa parola.
+Man mano che il modello elabora ogni parola (ogni posizione nella sequenza di input), la self-attention gli consente di guardare altre posizioni nella sequenza di input per trovare indizi che possano aiutarlo a ottenere una migliore codifica della parola.
 
-Se hai familiarità con le reti neurali ricorrenti (RNN), pensa a come mantenere uno stato nascosto consente a un'RNN di incorporare la sua rappresentazione delle parole/vettori precedenti che ha elaborato con quella corrente che sta elaborando. Il self-attention è il metodo che il Transformer utilizza per "incorporare" la "comprensione" di altre parole pertinenti in quella che stà elaborando attualmente.
+Se hai familiarità con le reti neurali ricorrenti (RNN), pensa a come mantenere uno stato nascosto consenta a un'RNN di confrontare la rappresentazione delle parole/vettori precedenti che ha elaborato con quella corrente che sta elaborando. La self-attention è il metodo che il Transformer utilizza per confrontare la "comprensione" di parole precedenti con quella che stà elaborando attualmente.
 
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self-attention_visualization.png" />
   <br />
-  Mentre stiamo codificando la parola "it" nel codificatore n. 5 (il codificatore superiore nello stack), parte del meccanismo di attenzione si stava concentrando su "The animal" e ha incorporato una parte della sua rappresentazione nella codifica di "it".
+  Mentre stiamo codificando la parola "it" nell'encoder n. 5 (l'encoder superiore nello stack), parte del meccanismo di attention si stava concentrando su "The animal" e ha incorporato una parte della sua rappresentazione nella codifica di "it".
 </div>
 
-
-Assicurati di dare un'occhiata al [notebook Tensor2Tensor](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb) in cui puoi caricare un modello Transformer e esaminarlo utilizzando questa visualizzazione interattiva.
-
-
+Di un'occhiata al [notebook Tensor2Tensor](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb) in cui puoi caricare un modello Transformer e esaminarlo utilizzando questa visualizzazione interattiva.
 
 ## Self-Attention in Dettaglio
 Iniziamo guardando come calcolare la self-attention utilizzando vettori e successivamente vedremo come viene effettivamente implementata -- utilizzando le matrici.
 
-**Primo passo** nel calcolare la self-attention è creare tre vettori da ciascun vettore di input del codificatore (in questo caso, l'embedding di ogni parola). Quindi, per ogni parola, creiamo un vettore di Query, un vettore di Key e un vettore di Value. Questi vettori vengono creati moltiplicando l'embedding per tre matrici che abbiamo addestrato durante il processo di training.
+**Il primo passo** per calcolare la self-attention è quello di creare tre vettori da ciascun vettore di input dell'encoder (in questo caso, l'embedding di ogni parola). Quindi, per ogni parola, creiamo un vettore di Query, un vettore di Key e un vettore di Value. Questi vettori vengono creati moltiplicando l'embedding per tre matrici che abbiamo addestrato durante il processo di training.
 
-Nota che questi nuovi vettori sono di dimensioni più piccole rispetto al vettore di embedding. La loro dimensionalità è di 64, mentre l'embedding e i vettori di input/output del codificatore hanno una dimensionalità di 512. Non è obbligatorio che siano più piccoli, è una scelta architetturale per rendere il calcolo della multiheaded attention (in gran parte) costante.
-
+Nota che questi nuovi vettori sono di dimensioni più piccole rispetto al vettore di embedding. La loro dimensionalità è di 64, mentre l'embedding e i vettori di input/output dell'encoder hanno una dimensionalità di 512. Non è obbligatorio che siano più piccoli, è una scelta architetturale per rendere il calcolo della multiheaded attention (in gran parte) costante.
 
 <br />
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self_attention_vectors.png" />
   <br />
-  Moltiplicando <span class="encoder">x1</span> per la matrice dei pesi del <span class="decoder">WQ</span> otteniamo <span class="decoder">q1</span>, il vettore "query" associato con quella parola. Alla fine creiamo una proiezione "query", "key" e "value" per ogni parola nella frase di input.
+  Moltiplicando <span class="encoder">x1</span> per la matrice dei pesi <span class="decoder">WQ</span> otteniamo <span class="decoder">q1</span>, il vettore "query" associato a quella parola. Alla stesso modo creiamo, "key" e "value" (con matrici differenti), per ogni parola nella frase di input.
 </div>
 
 <br />
@@ -157,11 +150,11 @@ Nota che questi nuovi vettori sono di dimensioni più piccole rispetto al vettor
 Cosa sono i vettori "query", "key" e "value"?
 <br />
 <br />
-Sono astrazioni che sono utili per calcolare e comprendere l'attenzione. Una volta che procedi nella lettura di come viene calcolata l'attenzione di seguito, saprai praticamente tutto ciò che devi sapere sul ruolo che ciascuno di questi vettori svolge.
+Sono astrazioni utili per calcolare e comprendere l'attention. Una volta conclusa la lettura che segue su come viene calcolata l'attention, saprai praticamente tutto sul ruolo che ciascuno di questi vettori svolge.
 
-**Secondo passo** nel calcolare la self-attention è calcolare uno score. Supponiamo di calcolare la self-attention per la prima parola in questo esempio, "Thinking". Dobbiamo valutare ogni parola della frase di input rispetto a questa parola. Lo score determina quanto focalizzare altre parti della frase di input mentre codifichiamo una parola in una determinata posizione.
+**Il secondo passo** della self-attention è calcolare uno score. Immaginiamo di applicare la self-attention alla prima parola in questo esempio, "Thinking". Dobbiamo valutare ogni parola della frase di input rispetto a questa parola. Lo score determinerà quanto focalizzare le altre parti della frase di input durante la codifica della parola considerata.
 
-Lo score viene calcolato prendendo il prodotto scalare del <span class="decoder">vettore di query</span> con il <span class="context">vettore di key</span> della rispettiva parola che stiamo valutando. Quindi, se stiamo elaborando la self-attention per la parola in posizione <span class="encoder">#1</span>, il primo score sarebbe il prodotto scalare tra <span class="decoder">q1</span> e <span class="context">k1</span>. Il secondo score sarebbe il prodotto scalare tra <span class="decoder">q1</span> e <span class="context">k2</span>.
+Lo score viene calcolato facendo il prodotto scalare tra il <span class="decoder">vettore di query</span> della parola che stiamo considerando, con il <span class="context">vettore di key</span> della parola con cui la vogliamo confrontare. Quindi, se stiamo elaborando la self-attention per la parola in posizione <span class="encoder">#1</span>, il primo score sarebbe il prodotto scalare tra <span class="decoder">q1</span> e <span class="context">k1</span>. Il secondo score sarebbe il prodotto scalare tra <span class="decoder">q1</span> e <span class="context">k2</span>.
 
 
 <br />
