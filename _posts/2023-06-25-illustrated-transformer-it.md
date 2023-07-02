@@ -248,9 +248,9 @@ Se eseguiamo il calcolo di self-attention descritto sopra, con otto diverse matr
 
  <br />
 
-Questo ci pone di fronte a un problema, il layer di feed-forward non si aspetta otto matrici, ma una sola (un vettore per ogni parola). Dobbiamo quindi condensare in una singola matrice.
+Questo ci pone di fronte a un problema, il layer di feed-forward non si aspetta otto matrici, ma una sola (un vettore per ogni parola). Dobbiamo quindi condensarle in una singola matrice.
 
-Come facciamo? Concateniamo le matrici, quindi le moltiplichiamo per una matrice di pesi aggiuntiva WO.
+Come facciamo? Concateniamo le matrici e le moltiplichiamo per una matrice di pesi aggiuntiva WO.
 
 
 <div class="img-div-any-width" markdown="0">
@@ -259,7 +259,7 @@ Come facciamo? Concateniamo le matrici, quindi le moltiplichiamo per una matrice
 
 </div>
 
-Praticamente è tutto quello che c'è da sapere sulla multi-headed self-attention. Mi rendo conto che ci sono parecchie matrici. Cercherò di metterle tutte in un'unica immagine in modo da poterle vedere tutte insieme.
+Praticamente è tutto quello che c'è da sapere sulla multi-headed self-attention. Mi rendo conto che ci sono parecchie matrici. Cercherò di metterle tutte in un'unica immagine in modo da poterle visualizzare tutte insieme.
 
 <br />
 
@@ -271,17 +271,17 @@ Praticamente è tutto quello che c'è da sapere sulla multi-headed self-attentio
 
 <br />
 
-Ora che abbiamo parlato delle attention heads, torniamo all'esempio precedente per vedere su cosa si stanno concentrando le diverse attenzioni mentre codifichiamo la parola "it" nella nostra frase di esempio:
+Ora che abbiamo parlato delle attention heads, torniamo all'esempio precedente per vedere su cosa si stanno concentrando le diverse attention mentre codifichiamo la parola "it" nella nostra frase di esempio:
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self-attention_visualization_2.png" />
   <br />
-  Mentre codifichiamo la parola "it", una delle attenzioni si concentra principalmente su "the animal", mentre un'altra si concentra su "tired" -- in un certo senso, la rappresentazione della parola "it" nel modello include un po' della rappresentazione sia di "animal" che di "tired".
+  Mentre codifichiamo la parola "it", una delle attention si concentra principalmente su "the animal", mentre un'altra si concentra su "tired" -- in un certo senso, la rappresentazione della parola "it" nel modello include un po' della rappresentazione sia di "animal" che di "tired".
 </div>
 
 <br />
 
-Tuttavia, se aggiungiamo tutte le attenzioni all'immagine, può essere più difficile interpretarle:
+Tuttavia, se aggiungiamo tutte le attention all'immagine, può essere più difficile interpretarle:
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self-attention_visualization_3.png" />
   <br />
@@ -290,16 +290,16 @@ Tuttavia, se aggiungiamo tutte le attenzioni all'immagine, può essere più diff
 
 
 ## Rappresentare l'Ordine della Sequenza Utilizzando l'Encoding Posizionale
-Una cosa che manca nel modello, come lo abbiamo descritto finora, è un modo per tenere conto dell'ordine delle parole nella sequenza di input.
+Una cosa che manca nel modello, come lo abbiamo descritto finora, è un modo per tener conto dell'ordine delle parole nella sequenza iniziale.
 
-Per affrontare questo problema, il transformer aggiunge un vettore a ciascun embedding di input. Questi vettori seguono un pattern specifico che il modello impara, il quale aiuta a determinare la posizione di ogni parola, o la distanza tra diverse parole nella sequenza. L'intuizione qui è che aggiungere questi valori agli embeddings fornisce distanze significative tra i vettori di embedding una volta che sono proiettati nei vettori Q/K/V e durante la dot-product attention.
+Per affrontare questo problema, il Transformer aggiunge un vettore a ciascun embedding di input. Questi vettori seguono un pattern specifico che il modello impara, il quale aiuta a determinare la posizione di ogni parola, o la distanza tra diverse parole nella sequenza. L'intuizione qui è che aggiungere questi valori agli embeddings fornisce informazioni significative una volta che sono proiettati nei vettori Q/K/V e durante la dot-product attention.
 
 <br />
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_positional_encoding_vectors.png" />
   <br />
-  Per dare al modello un senso dell'ordine delle parole, aggiungiamo vettori di encoding posizionale, i cui valori seguono un pattern specifico.
+  Per dare al modello il senso dell'ordine delle parole, aggiungiamo vettori di encoding posizionale, i cui valori seguono un pattern specifico.
 </div>
   <br />
 
@@ -323,11 +323,11 @@ Nella figura seguente, ogni riga corrisponde a un encoding posizionale di un vet
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_positional_encoding_large_example.png" />
   <br />
-  Un esempio reale di encoding posizionale per 20 parole (righe) con una dimensione di embedding di 512 (colonne). Puoi vedere che sembra diviso a metà lungo il centro. Questo perché i valori della metà sinistra sono generati da una funzione (che utilizza il seno), mentre la metà destra è generata da un'altra funzione (che utilizza il coseno). Vengono quindi concatenati per formare ciascuno dei vettori di encoding posizionale.
+  Un esempio reale di encoding posizionale per 20 parole (righe) con una dimensione di embedding di 512 (colonne). Come puoi vedere sembra essere diviso a metà lungo il centro. Questo perché i valori della metà sinistra sono generati da una funzione (che utilizza il seno), mentre la metà destra è generata da un'altra funzione (che utilizza il coseno). Vengono infine concatenati per formare ciascuno dei vettori di encoding posizionale.
 </div>
 
 
-La formula per la codifica posizionale è descritta nell'articolo (sezione 3.5). Puoi vedere il codice per generare le codifiche posizionali in [```get_timing_signal_1d()```](https://github.com/tensorflow/tensor2tensor/blob/23bd23b9830059fbc349381b70d9429b5c40a139/tensor2tensor/layers/common_attention.py). Questo non è l'unico metodo possibile per la codifica posizionale. Tuttavia, offre il vantaggio di poter scalare a lunghezze di sequenze non viste in precedenza (ad esempio, se al nostro modello addestrato viene chiesto di tradurre una frase più lunga rispetto a quelle presenti nel nostro set di addestramento).
+La formula per la codifica posizionale è descritta nell'articolo (sezione 3.5). È possibile vedere il codice per generare le codifiche posizionali in [```get_timing_signal_1d()```](https://github.com/tensorflow/tensor2tensor/blob/23bd23b9830059fbc349381b70d9429b5c40a139/tensor2tensor/layers/common_attention.py). Questo non è l'unico metodo possibile per la codifica posizionale. Tuttavia, offre il vantaggio di poter scalare a lunghezze di sequenze non viste in precedenza (ad esempio, se al nostro modello addestrato viene chiesto di tradurre una frase più lunga rispetto a quelle presenti nel nostro set di addestramento).
 
 **Aggiornamento luglio 2020:** 
 La codifica posizionale mostrata sopra proviene dall'implementazione Tranformer2Transformer del Transformer. Il metodo mostrato nell'articolo è leggermente diverso in quanto non concatena direttamente, ma intreccia i due segnali. La figura seguente mostra come appare. [Qui il codice che lo genera:](https://github.com/jalammar/jalammar.github.io/blob/master/notebookes/transformer/transformer_positional_encoding_graph.ipynb):
@@ -338,7 +338,7 @@ La codifica posizionale mostrata sopra proviene dall'implementazione Tranformer2
 </div>
 
 ## I Residuals
-Un dettaglio dell'architettura dell'encoder che dobbiamo menzionare prima di procedere è che ogni sottolivello (self-attention, ffnn) in ogni encoder ha una connessione residua attorno ad esso ed è seguito da un passaggio di [layer-normalization](https://arxiv.org/abs/1607.06450).
+Un dettaglio dell'architettura dell'encoder che dobbiamo menzionare prima di procedere è che ogni sottolivello (self-attention, ffnn) di ogni encoder ha una residual connection e una [layer-normalization](https://arxiv.org/abs/1607.06450).
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_resideual_layer_norm.png" />
@@ -361,9 +361,9 @@ Questo vale anche per i sottolivelli del decoder. Se pensassimo a un Transformer
 
 
 ## La parte del Decoder
-Ora che abbiamo coperto la maggior parte dei concetti relativi al lato encoder, conosciamo fondamentalmente il funzionamento dei componenti del decoder. Ma diamo un'occhiata a come lavorano insieme.
+Ora che abbiamo coperto la maggior parte dei concetti relativi al lato encoder, conosciamo anche il funzionamento dei componenti del decoder. Ma diamo un'occhiata a come lavorano insieme.
 
-L'encoder inizia elaborando la sequenza di input. L'output dell'encoder superiore viene quindi trasformato in un insieme di vettori di attention K e V. Questi vettori verranno utilizzati da ciascun decoder nel suo strato di "encoder-decoder attention", che aiuta il decoder a concentrarsi sui punti appropriati nella sequenza di input:
+L'encoder inizia elaborando la sequenza di input. L'output dell'encoder superiore viene quindi trasformato in un insieme di vettori di attention K e V. Questi vettori verranno utilizzati da ciascun decoder nel suo strato di "encoder-decoder attention", che aiuterà il decoder a concentrarsi sui punti appropriati nella sequenza di input:
 
 
 <div class="img-div-any-width" markdown="0">
@@ -372,7 +372,7 @@ L'encoder inizia elaborando la sequenza di input. L'output dell'encoder superior
   Dopo aver completato la fase di codifica, iniziamo la fase di decodifica. Ogni passaggio nella fase di decodifica produce un elemento dalla sequenza di output (la frase tradotta in inglese in questo caso).
 </div>
 
-I passaggi successivi ripetono il processo fino a quando non viene raggiunto un simbolo speciale di fine frase (<end of sentence>) che indica che il decoder del transformer ha completato la sua generazione di output. L'output di ogni passaggio viene alimentato al decoder inferiore nel passaggio successivo, e i decoder trasmettono i loro risultati di decodifica proprio come hanno fatto gli encoder. E proprio come abbiamo fatto con gli input dell'encoder, incorporiamo e aggiungiamo una codifica di posizione a questi input del decoder per indicare la posizione di ciascuna parola.
+I passaggi successivi ripetono il processo fino a quando non viene raggiunto un simbolo speciale di fine frase (<end of sentence>) che indica che il decoder del Transformer ha completato la sua generazione. L'output di ogni passaggio viene inserito al decoder inferiore nel passaggio successivo. E proprio come abbiamo fatto con gli input dell'encoder, incorporiamo e aggiungiamo una codifica di posizione a questi input del decoder per indicare la posizione di ciascuna parola.
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_decoding_2.gif" />
@@ -382,102 +382,100 @@ I passaggi successivi ripetono il processo fino a quando non viene raggiunto un 
 
 Gli strati di self-attention nel decoder operano in modo leggermente diverso rispetto a quelli nell'encoder:
 
-Nel decoder, lo strato di self-attention può considerare solo le posizioni precedenti nella sequenza di output. Ciò viene fatto mascherando le posizioni future (impostandole a ```-inf```) prima del passaggio softmax nel calcolo della self-attention.
+Nel decoder, lo strato di self-attention tiene conto solo delle posizioni precedenti della sequenza di output. Ciò viene fatto mascherando le posizioni future (impostandole a ```-inf```) prima del passaggio alla softmax nel calcolo della self-attention.
 
-Lo strato di "Encoder-Decoder Attention" funziona proprio come la multiheaded self-attention, ad eccezione che crea la matrice delle Queries dallo strato sottostante e prende le matrici delle Keys e delle Values dall'output dello stack dell'encoder.
+Lo strato di "Encoder-Decoder Attention" funziona proprio come la multiheaded self-attention, ad eccezione che crea la matrice delle Queries dallo strato sottostante e prende le matrici delle Keys e delle Values dall'output dell'encoder.
 
-## Lineare finale e il layer di Softmax.
+## Lineare finale e Softmax.
 
-La pila del decoder produce un vettore di numeri decimali. Come lo convertiamo in una parola? Questo è il compito del livello lineare finale, seguito da un livello Softmax.
+La catena di decoder produce un vettore di numeri decimali. Come lo convertiamo in una parola? Questo è il compito del livello lineare finale e della Softmax.
 
-Il livello lineare è un semplice neurone completamente connesso che proietta il vettore prodotto dalla pila dei decoder in un vettore molto, molto più ampio chiamato vettore dei logit.
+Il livello lineare è un semplice fully connected network che proietta il vettore prodotto dai decoder in un vettore molto più ampio chiamato vettore dei logits.
 
-Supponiamo che il nostro modello conosca 10.000 parole inglesi uniche (il "vocabolario di output" del nostro modello) apprese dal set di dati di addestramento. Questo renderebbe il vettore dei logit largo 10.000 celle, ognuna corrispondente al punteggio di una parola unica. Così interpretiamo l'output del modello seguito dal livello lineare.
+Supponiamo che il nostro modello conosca 10.000 parole inglesi uniche (il "vocabolario di output") apprese dal set di dati di addestramento. In questo caso avremmo un vettore di logits di lunghezza 10.000, ognuna corrispondente al punteggio di una parola unica. Questa è l'interpretazione dei valori ottenuti dopo il layer lineare.
 
-Il livello Softmax trasforma quindi questi punteggi in probabilità (tutte positive, che sommano a 1,0). Viene selezionata la cella con la probabilità più alta e la parola associata ad essa viene prodotta come output per questo passo temporale.
+È a questo punto che la Softmax trasforma questi valori in probabilità (tutte positive, che sommano a 1,0). Selezioniamo la cella con la probabilità più alta e la parola associata ad essa viene prodotta come output per questo passo della generazione.
 
   <br />
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_decoder_output_softmax.png" />
   <br />
-  Questa figura parte dal basso con il vettore prodotto come output della pila dei decoder. Viene quindi convertito in una parola di output.
+  Si parte dal basso con il vettore prodotto come output dai decoder, il quale viene convertito in una parola in output.
 </div>
 
   <br />
 
 ## Riepilogo del Training
-Ora che abbiamo coperto l'intero processo di passaggio in avanti attraverso un Transformer addestrato, sarebbe utile dare un'occhiata all'intuizione dell'addestramento del modello.
+Ora che abbiamo coperto l'intero processo di input output di un Transformer addestrato, sarebbe utile dare un'occhiata all'idea che si trova alla base del training del modello.
 
-Durante l'addestramento, un modello non addestrato passerebbe attraverso lo stesso passaggio in avanti. Ma poiché lo stiamo addestrando su un set di dati di addestramento etichettato, possiamo confrontare il suo output con l'output corretto effettivo.
+Durante l'addestramento, un modello non trainato passerebbe attraverso lo stesso processo appena illustrato, ma poiché lo stiamo addestrando su un set di dati etichettato, possiamo confrontare il suo output con l'output effetivamente corretto.
 
 Per visualizzare questo, supponiamo che il nostro vocabolario di output contenga solo sei parole ("a", "am", "i", "thanks", "student", and "\<eos\>" (abbreviato per 'end of sentence')).
 
  <div class="img-div" markdown="0">
    <img src="/images/t/vocabulary.png" />
    <br />
-   Il vocabolario di output del nostro modello viene creato nella fase di preelaborazione prima di iniziare l'addestramento.
+   Il vocabolario di output del nostro modello viene creato nella fase di preelaborazione, prima di iniziare l'addestramento.
  </div>
 
-Una volta definito il nostro vocabolario di output, possiamo utilizzare un vettore della stessa larghezza per indicare ogni parola nel nostro vocabolario. Questo è anche noto come codifica one-hot. Ad esempio, possiamo indicare la parola "am" utilizzando il seguente vettore:
+Una volta definito il vocabolario di output, possiamo utilizzare un vettore della stessa lunghezza per indicare ogni parola (codifica one-hot). Ad esempio, possiamo indicare la parola "am" utilizzando il seguente vettore:
 
 <div class="img-div" markdown="0">
   <img src="/images/t/one-hot-vocabulary-example.png" />
   <br />
-  Esempio: codifica one-hot del nostro vocabolario di output
+  Esempio: codifica one-hot del vocabolario di output.
 </div>
 
-Dopo questo riepilogo, discutiamo la funzione di perdita del modello -- la metrica che stiamo ottimizzando durante la fase di addestramento per portare a un modello addestrato e, si spera, sorprendentemente accurato.
+Dopo questo riepilogo, discutiamo la loss function del modello -- ovvero la metrica che ottimizzeremo durante la fase di training.
 
 ## Loss Function
-Supponiamo di essere nella fase di addestramento del nostro modello. Supponiamo che sia il nostro primo passo nella fase di addestramento e che lo stiamo addestrando su un semplice esempio -- tradurre "merci" in "thanks".
+Supponiamo di essere nel primo passo della fase di training del modello e che lo stiamo addestrando su un semplice esempio -- tradurre "merci" in "thanks".
 
-Ciò significa che vogliamo che l'output sia una distribuzione di probabilità che indichi la parola "grazie". Ma poiché questo modello non è ancora addestrato, ciò è improbabile che accada fin da subito.
+L'output desiderato dovrebbe essere una distribuzione di probabilità piccata sulla parola "grazie", ma poiché il modello non è ancora addestrato, ciò sarà improbabile che accada alla prima iterazione.
 
 <div class="img-div" markdown="0">
   <img src="/images/t/transformer_logits_output_and_label.png" />
   <br />
-  Poiché i parametri (pesi) del modello sono inizializzati casualmente, il modello (non addestrato) produce una distribuzione di probabilità con valori arbitrari per ogni cella/parola. Possiamo confrontarla con l'output effettivo, quindi regolare tutti i pesi del modello utilizzando la retropropagazione per avvicinare l'output all'output desiderato.
+  Poiché i parametri (pesi) del modello sono inizializzati casualmente, il modello (non addestrato) produce una distribuzione di probabilità con valori arbitrari per ogni cella/parola. Possiamo confrontarla con l'output effettivo, quindi regolare tutti i pesi del modello utilizzando la backpropagation per avvicinare l'output del Transformer all'output desiderato.
 </div>
 
 <br />
 
-Come confronti due distribuzioni di probabilità? Semplicemente sottraendo una dall'altra. Per ulteriori dettagli, guarda [cross-entropy](https://colah.github.io/posts/2015-09-Visual-Information/) e [Kullback–Leibler divergence](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained).
+Come confrontiamo due distribuzioni di probabilità? Semplicemente sottraendo una dall'altra. Per ulteriori dettagli, guarda [cross-entropy](https://colah.github.io/posts/2015-09-Visual-Information/) e [Kullback–Leibler divergence](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained).
 
-Ma nota che questo è un esempio semplificato. In modo più realistico, useremo una frase più lunga di una parola. Ad esempio -- input: "je suis étudiant" e output previsto: "i am a student". Ciò significa che vogliamo che il nostro modello produca successivamente distribuzioni di probabilità in cui:
+Questa è una prova semplificata. Per un esempio più realistico consideriamo -- l'input: "je suis étudiant" e l'output previsto: "i am a student". In questo caso vogliamo che il nostro modello produca successivamente distribuzioni di probabilità in cui:
 
- * Ogni distribuzione di probabilità è rappresentata da un vettore di larghezza vocab_size (6 nel nostro esempio di esempio, ma più realisticamente un numero come 30.000 o 50.000)
+ * Ogni distribuzione di probabilità è rappresentata da un vettore di larghezza vocab_size (6 nel nostro esempio (realisticamente un numero come 30.000 o 50.000))
  * La prima distribuzione di probabilità ha la probabilità più alta nella cella associata alla parola "i"
  * La seconda distribuzione di probabilità ha la probabilità più alta nella cella associata alla parola "am"
- * E così via, fino a quando la quinta distribuzione di output indica il simbolo '```<end of sentence>```' che ha anch'esso una cella associata dall'elemento di vocabolario di 10.000 elementi.
+ * E così via, fino a quando la quinta distribuzione di output indica il simbolo '```<end of sentence>```' anch'esso associato a uno dei 10.000 elementi del vocabolario.
 
 
  <div class="img-div" markdown="0">
    <img src="/images/t/output_target_probability_distributions.png" />
    <br />
-   Le distribuzioni di probabilità di destinazione su cui addestreremo il nostro modello nell'esempio di addestramento per una frase campione.
+   Le distribuzioni di probabilità su cui traineremo il nostro modello per l'esempio campione.
  </div>
 
 <br />
 
-Dopo aver addestrato il modello per un tempo sufficiente su un dataset abbastanza ampio, ci aspetteremmo che le distribuzioni di probabilità prodotte assomiglino a queste:
+Dopo aver addestrato il modello per un tempo sufficiente su un dataset abbastanza ampio, ci aspettiamo che le distribuzioni di probabilità prodotte assomiglino a queste:
 
   <div class="img-div" markdown="0">
     <img src="/images/t/output_trained_model_probability_distributions.png" />
     <br />
-    Speriamo che, dopo l'addestramento, il modello produca la traduzione corretta che ci aspettiamo. Naturalmente, questo non è un vero indicatore se questa frase faceva parte del dataset di addestramento (vedi: <a href="https://www.youtube.com/watch?v=TIgfjmp-4BA">validazione incrociata</a>). Notate che ogni posizione ottiene un po' di probabilità anche se è improbabile che sia l'output di quel passo temporale: questa è una proprietà molto utile della softmax che aiuta il processo di addestramento.
+    Dopo l'addestramento ci aspettiamo che il modello produca la traduzione. Naturalmente, questo non è un vero indicatore in quanto questa frase faceva parte del dataset di addestramento (vedi: <a href="https://www.youtube.com/watch?v=TIgfjmp-4BA">cross validation</a>). Notate che ogni posizione ottiene un po' di probabilità anche se è improbabile che sia l'output prodotto: questa è una proprietà molto utile della softmax che permette il processo di addestramento.
 </div>
 
 
-Ora, poiché il modello produce le uscite una alla volta, possiamo assumere che il modello selezioni la parola con la probabilità più alta da quella distribuzione di probabilità e scarti il resto. Questo è un modo per farlo (chiamato decodifica greedy). Un altro modo per farlo sarebbe quello di mantenere, ad esempio, le prime due parole (ad esempio, 'I' e 'a'), quindi nel passaggio successivo, eseguire il modello due volte: una volta assumendo che la prima posizione di output fosse la parola 'Io' e un'altra volta assumendo che la prima posizione di output fosse la parola 'un', e la versione che produce meno errore considerando entrambe le posizioni #1 e #2 viene conservata. Ripetiamo questo per le posizioni #2 e #3...ecc. Questo metodo si chiama "beam search", dove nel nostro esempio, beam_size era due (il che significa che in ogni momento, due ipotesi parziali (traduzioni incomplete) vengono conservate in memoria), e top_beams è anche due (il che significa che restituiremo due traduzioni). Questi sono entrambi iperparametri con cui puoi sperimentare.
-
-
+Poiché il modello genera un output alla volta, possiamo assumere che selezioni la parola con la probabilità più alta e scarti il resto. Questo è uno dei possibili metodi chiamato decodifica greedy. Un altro modo sarebbe quello di mantenere, ad esempio, le prime due parole ('I' e 'a'), per poi nel passaggio successivo, eseguire il modello due volte: una volta assumendo che la prima posizione di output sia la parola 'I' e un'altra che sia 'un'. La versione che produce la loss function minore viene conservata. Ripetiamo questo per le posizioni #2 e #3...ecc. Questo metodo si chiama "beam search", dove nel nostro esempio, la beam_size è due (due ipotesi parziali (traduzioni incomplete) vengono conservate in memoria), e top_beams è anche due (restituiremo due traduzioni). Questi sono entrambi iperparametri con cui si può sperimentare.
 
 ## Avanti e trasforma
 
-Spero che tu abbia trovato questo un punto di partenza utile per rompere il ghiaccio con i concetti principali del Transformer. Se vuoi approfondire, ti suggerisco i seguenti passaggi successivi:
+Spero che tu abbia trovato questo un punto di partenza utile per rompere il ghiaccio con i concetti principali del Transformer. Se vuoi approfondire, ti suggerisco i seguenti approfondimenti:
 
-* Leggi l'articolo [Attention Is All You Need](https://arxiv.org/abs/1706.03762), il blogpost sul transformer ([Transformer: A Novel Neural Network Architecture for Language Understanding](https://ai.googleblog.com/2017/08/transformer-novel-neural-network.html)), e il [Tensor2Tensor announcement](https://ai.googleblog.com/2017/06/accelerating-deep-learning-research.html).
+* Leggi l'articolo [Attention Is All You Need](https://arxiv.org/abs/1706.03762), il blogpost sul Transformer ([Transformer: A Novel Neural Network Architecture for Language Understanding](https://ai.googleblog.com/2017/08/transformer-novel-neural-network.html)), e il [Tensor2Tensor announcement](https://ai.googleblog.com/2017/06/accelerating-deep-learning-research.html).
 * Guarda [Łukasz Kaiser's talk](https://www.youtube.com/watch?v=rBCqOTEfxvg) che illustra il modello e i suoi dettagli.
 * Sperimenta con [Jupyter Notebook provided as part of the Tensor2Tensor repo](https://colab.research.google.com/github/tensorflow/tensor2tensor/blob/master/tensor2tensor/notebooks/hello_t2t.ipynb)
 * Esplora [Tensor2Tensor repo](https://github.com/tensorflow/tensor2tensor).
@@ -495,7 +493,7 @@ Lavori correlati:
 * [Adafactor: Adaptive Learning Rates with Sublinear Memory Cost](https://arxiv.org/abs/1804.04235)
 
 ## Riconoscimenti
-Grazie a <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a href="http://jakob.uszkoreit.net/">Jakob Uszkoreit</a>, <a href="https://www.linkedin.com/in/llion-jones-9ab3064b">Llion Jones </a>, <a href="https://ai.google/research/people/LukaszKaiser">Lukasz Kaiser</a>, <a href="https://twitter.com/nikiparmar09">Niki Parmar</a>, and <a href="https://dblp.org/pers/hd/s/Shazeer:Noam">Noam Shazeer</a> per aver fornito feedback sulle versioni precedenti di questo post.
+Grazie a <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a href="http://jakob.uszkoreit.net/">Jakob Uszkoreit</a>, <a href="https://www.linkedin.com/in/llion-jones-9ab3064b">Llion Jones </a>, <a href="https://ai.google/research/people/LukaszKaiser">Lukasz Kaiser</a>, <a href="https://twitter.com/nikiparmar09">Niki Parmar</a>, e <a href="https://dblp.org/pers/hd/s/Shazeer:Noam">Noam Shazeer</a> per aver fornito feedback sulle versioni precedenti di questo post.
 
 Per favore contatta Jay Alammar su <a href="https://twitter.com/JayAlammar">Twitter</a> per qualsiasi correzione o feedback sull'articolo originario.
 
