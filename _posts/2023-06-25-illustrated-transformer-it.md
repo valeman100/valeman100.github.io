@@ -6,11 +6,15 @@ title: Il transformer illustrato - IT
 
 ## Disclaimer
 Traduzione italiana di [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+
 Non sono un traduttore professionista. 
+
 La proprietà intellettuale dell'articolo è di [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 
 Italian translation of [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+
 I'm not a professional translator. 
+
 The intellectual property of the article is owned by [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 
 Nel [post precedente, abbiamo esaminato l'Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- un metodo onnipresente nei moderni modelli di deep learning. L'attention è uno strumento che ha contribuito a migliorare le prestazioni delle applicazioni di traduzione automatica che utilizzano modelli neurali. In questo post, esamineremo **Il Transformer**, un modello che utilizza l'attention per aumentare la velocità con cui queste reti possono essere addestrati. Il Trasformer ha perfino supera il modello di traduzione automatica neurale di Google in attività specifiche. Il più grande vantaggio, tuttavia, deriva dal modo in cui il Transformer si presta alla parallelizzazione. È infatti raccomandazione di Google Cloud sfruttare il Transformer come modello di riferimento per utilizzare la loro proposte di [Cloud TPU](https://cloud.google.com/tpu/). Proviamo a scomporre il modello e vediamo come funziona.
@@ -25,16 +29,15 @@ Il Transformer è stato proposto nell'articolo [Attention is All You Need](https
  max-width: 560px;"
 allowfullscreen></iframe>
 </div>
+
+<!--more-->
+
 ## Uno sguardo generale
 Iniziamo osservando il modello come fosse una scatola nera. In un'applicazione di traduzione automatica, prenderebbe una frase in una lingua e restituirebbe la sua traduzione in un'altra.
-
 
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/the_transformer_3.png" />
 </div>
-
-
-<!--more-->
 
 Aprendo quella meraviglia di Optimus Prime, vediamo un componente di codifica, un componente di decodifica e le connessioni tra di essi.
 
