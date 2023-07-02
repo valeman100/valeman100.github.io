@@ -4,15 +4,6 @@ published: True
 title: Il transformer illustrato - IT
 ---
 
-##### Disclaimer
-Traduzione italiana di [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
-Non sono un traduttore professionista. 
-La proprietà intellettuale dell'articolo è di [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
-
-Italian translation of [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
-I'm not a professional translator. 
-The intellectual property of the article is owned by [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
-
 Nel [post precedente, abbiamo esaminato l'Attention](https://jalammar.github.io/visualizing-neural-machine-translation-mechanics-of-seq2seq-models-with-attention/) -- un metodo onnipresente nei moderni modelli di deep learning. L'attention è un concetto che ha contribuito a migliorare le prestazioni delle applicazioni di traduzione automatica con modelli neurali. In questo post, esamineremo **The Transformer**, un modello che utilizza l'attenzione per aumentare la velocità con cui questi modelli possono essere addestrati. Il Trasformer supera il modello di traduzione automatica neurale di Google in attività specifiche. Il più grande vantaggio, tuttavia, deriva dal modo in cui il Transformer si presta alla parallelizzazione. È infatti raccomandazione di Google Cloud utilizzare il Transformer come modello di riferimento per utilizzare la loro proposte di [Cloud TPU](https://cloud.google.com/tpu/). Quindi proviamo a scomporre il modello e vediamo come funziona.
 
 Il Transformer è stato proposto nell'articolo [Attention is All You Need](https://arxiv.org/abs/1706.03762). Una sua implementazione TensorFlow è disponibile come parte del pacchetto [Tensor2Tensor](https://github.com/tensorflow/tensor2tensor). Il gruppo NLP di Harvard ha creato una [guida che spiega l'articolo con l'implementazione di PyTorch](http://nlp.seas.harvard.edu/2018/04/03/attention.html). In questo post, cercheremo di semplificare un po' le cose e di introdurre i concetti uno per uno, sperando che sia più facile da capire per le persone senza una conoscenza approfondita dell'argomento.
@@ -35,6 +26,15 @@ Iniziamo osservando il modello come una singola scatola nera. In un'applicazione
 
 
 <!--more-->
+
+## Disclaimer
+Traduzione italiana di [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+Non sono un traduttore professionista. 
+La proprietà intellettuale dell'articolo è di [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+
+Italian translation of [The illustrated Transformer by Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
+I'm not a professional translator. 
+The intellectual property of the article is owned by [Jay Alammar](http://jalammar.github.io/illustrated-transformer/)
 
 
 Aprendo quella meraviglia di Optimus Prime, vediamo un componente di codifica, un componente di decodifica e le connessioni tra di essi.
