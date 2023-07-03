@@ -91,7 +91,7 @@ Dopo l'embedding delle parole della sequenza iniziale, ciascuna di esse viene pr
 
 Qui iniziamo a vedere una caratteristica chiave del Transformer, ovvero che l'encoder processa singolarmente ogni parola. Verrebbe da pensare che non ci siano correlazioni tra le parole ma non è cosi infatti le dipendenze tra i termini sono introdotte nella self-attention. Lo strato feed-forward, tuttavia, non ha tali dipendenze, e quindi i vari percorsi possono essere parallelizzati.
 
-Successivamente, cambieremo l'esempio con una frase più breve e osserveremo cosa accade in ciascun sottolivello del'encoder.
+Successivamente, cambieremo l'esempio con una frase più breve e osserveremo cosa accade in ciascun sottolivello dell’encoder.
 
 ## Stiamo codificando!
 
@@ -140,7 +140,7 @@ Nota che questi nuovi vettori sono di dimensioni più piccole rispetto al vettor
 <div class="img-div-any-width" markdown="0">
   <img src="/images/t/transformer_self_attention_vectors.png" />
   <br />
-  Moltiplicando <span class="encoder">x1</span> per la matrice dei pesi <span class="decoder">WQ</span> otteniamo <span class="decoder">q1</span>, il vettore "query" associato a quella parola. Alla stesso modo creiamo, "key" e "value" (con matrici differenti), per ogni parola nella frase di input.
+  Moltiplicando <span class="encoder">x1</span> per la matrice dei pesi <span class="decoder">WQ</span> otteniamo <span class="decoder">q1</span>, il vettore "query" associato a quella parola. Allo stesso modo creiamo, "key" e "value" (con matrici differenti), per ogni parola nella frase di input.
 </div>
 
 <br />
@@ -408,7 +408,7 @@ Supponiamo che il nostro modello conosca 10.000 parole inglesi uniche (il "vocab
 ## Riepilogo del Training
 Ora che abbiamo coperto l'intero processo di input output di un Transformer addestrato, sarebbe utile dare un'occhiata all'idea che si trova alla base del training del modello.
 
-Durante l'addestramento, un modello non trainato passerebbe attraverso lo stesso processo appena illustrato, ma poiché lo stiamo addestrando su un set di dati etichettato, possiamo confrontare il suo output con l'output effetivamente corretto.
+Durante l'addestramento, un modello non trainato passerebbe attraverso lo stesso processo appena illustrato, ma poiché lo stiamo addestrando su un set di dati etichettato, possiamo confrontare il suo output con l'output effettivamente corretto.
 
 Per visualizzare questo, supponiamo che il nostro vocabolario di output contenga solo sei parole ("a", "am", "i", "thanks", "student", and "\<eos\>" (abbreviato per 'end of sentence')).
 
@@ -497,3 +497,4 @@ Grazie a <a href="https://twitter.com/ilblackdragon">Illia Polosukhin</a>, <a hr
 Per favore contatta Jay Alammar su <a href="https://twitter.com/JayAlammar">Twitter</a> per qualsiasi correzione o feedback sull'articolo originario.
 
 Altrimenti per correzione o feedback su questa traduzione contattate Valerio Mannucci su <a href="https://twitter.com/Valeman100">Twitter</a>.
+![image](https://github.com/valeman100/valeman100.github.io/assets/57062687/db855665-2c96-4526-b81a-8048eef1525b)
