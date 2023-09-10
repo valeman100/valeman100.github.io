@@ -145,9 +145,7 @@ print("Price:", round(response["trained_tokens"]*0.008*0.0001*response["hyperpar
 Finally, we printed some useful info which include also the prices (referred to the specific model we selected).
 In this case, if we want to calculate the cost in advance the formula is:
 
-```math
-\text{finetuning cost} = \frac{\text{training tokens} \dot \text{n_epochs}}{1000 \dot 0.008 \text{$}}
-```
+finetuning cost = $\frac{\text{training tokens} \dot \text{n_epochs}}{1000 \dot 0.008 \text{$}}$
 
 which for a training file with 100,000 tokens trained over 3 epochs, the expected cost would be ~ $2.40.
 
