@@ -238,6 +238,8 @@ In this guide, we saw how to finetune the most powerful model currently availabl
 Remember that this process is not always the holy grail for your problems, in particular, is extremely effective in domain adaptation problems (to teach the style of your outputs).
 For tasks that require increasing the knowledge of the model, I would suggest using a RAG.
 
+The validation method we developed here is strongly human-based. We can automatise it using for example another model and ask to compare the different completions.
+
 I hope you have found this guide helpful. 
 
 Please hit me up on <a href="https://twitter.com/Valeman100">Twitter</a> for any correction or feedback.
