@@ -5,7 +5,7 @@ title: Finetune and validate your version of ChatGPT
 ---
 
 <div class="img-div-any-width" markdown="0">
-  <img src="/images/long_short.png" />
+  <img src="/images/reading_robot.png" />
 </div>
 
 Finally last week OpenAI released the APIs to finetune the popular model on which ChatGPT is based!
