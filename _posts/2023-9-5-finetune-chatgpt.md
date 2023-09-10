@@ -145,7 +145,7 @@ print("Price:", round(response["trained_tokens"]*0.008*0.0001*response["hyperpar
 Finally, we printed some useful info which include also the prices (referred to the specific model we selected).
 In this case, if we want to calculate the cost in advance the formula is:
 
-<div class="img-div-any-width" markdown="0">
+<div class="img-div-any-width" markdown="0" style="text-align: center;">
   <img src="/images/cost_formula.png" />
 </div>
 
