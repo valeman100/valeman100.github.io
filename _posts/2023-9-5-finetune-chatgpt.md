@@ -146,7 +146,7 @@ Finally, we printed some useful info which include also the prices (referred to 
 In this case, if we want to calculate the cost in advance the formula is:
 
 ```math
-finetuning \; cost \; = \frac{training \; tokens \; \times \; epochs}{1000 \times 0.008 \$ }
+finetuning \; cost \; = \frac{training \; tokens \; \times \; epochs  \times 0.008 \$}{1000}
 ```
 
 which for a training file with 100,000 tokens trained over 3 epochs, the expected cost would be ~ $2.40.
