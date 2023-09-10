@@ -145,7 +145,9 @@ print("Price:", round(response["trained_tokens"]*0.008*0.0001*response["hyperpar
 Finally, we printed some useful info which include also the prices (referred to the specific model we selected).
 In this case, if we want to calculate the cost in advance the formula is:
 
-$$ cost = \frac{tokens \times epochs  \times 0.008 \$}{1000} $$
+<div class="img-div-any-width" markdown="0">
+  <img src="/images/cost_formula.png" />
+</div>
 
 which for a training file with 100,000 tokens trained over 3 epochs, the expected cost would be ~ $2.40.
 
