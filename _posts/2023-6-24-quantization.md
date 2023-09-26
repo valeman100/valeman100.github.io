@@ -28,7 +28,7 @@ This guide has been tested with a finetuned version of llama 7B from the [huggin
 
 <!--more-->
 
-Read the full article on [Medium[(https://medium.com/@val.mannucci/how-to-quantize-your-finetuned-llama-model-24e7b42c1ad6)
+Read the full article on [Medium](https://medium.com/@val.mannucci/how-to-quantize-your-finetuned-llama-model-24e7b42c1ad6)
 
 Please hit me up on <a href="https://twitter.com/Valeman100">Twitter</a> for any corrections or feedback.
 
